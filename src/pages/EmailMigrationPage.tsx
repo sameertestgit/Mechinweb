@@ -1,0 +1,269 @@
+import React, { useEffect, useState } from 'react';
+import { Mail, ArrowRight, CheckCircle, Clock, Shield, Users } from 'lucide-react';
+import { Link } from 'react-router-dom';
+
+const EmailMigrationPage = () => {
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    setIsVisible(true);
+    window.scrollTo(0, 0);
+  }, []);
+
+  const features = [
+    {
+      icon: Shield,
+      title: "Zero Data Loss",
+      description: "Advanced migration protocols ensure 100% data integrity during transfer"
+    },
+    {
+      icon: Clock,
+      title: "Minimal Downtime",
+      description: "Strategic migration scheduling to minimize business disruption"
+    },
+    {
+      icon: Users,
+      title: "User Training",
+      description: "Comprehensive training for your team on the new email platform"
+    }
+  ];
+
+  const migrationProcess = [
+    {
+      step: "01",
+      title: "Assessment & Planning",
+      description: "We analyze your current email setup and create a detailed migration strategy"
+    },
+    {
+      step: "02",
+      title: "Pre-Migration Setup",
+      description: "Configure the new email platform and prepare migration tools"
+    },
+    {
+      step: "03",
+      title: "Data Migration",
+      description: "Secure transfer of all emails, contacts, and calendar data"
+    },
+    {
+      step: "04",
+      title: "Testing & Validation",
+      description: "Thorough testing to ensure all data has been migrated correctly"
+    },
+    {
+      step: "05",
+      title: "Go-Live & Support",
+      description: "Switch to the new system with ongoing support and monitoring"
+    }
+  ];
+
+  return (
+    <div className="min-h-screen bg-gray-900 pt-20">
+      {/* Hero Section */}
+      <section className="py-20 bg-gradient-to-br from-cyan-900 via-blue-900 to-purple-900 relative overflow-hidden">
+        <div className="absolute inset-0">
+          {[...Array(50)].map((_, i) => (
+            <div
+              key={i}
+              className="absolute bg-white/20 rounded-full animate-float"
+              style={{
+                width: `${Math.random() * 3 + 1}px`,
+                height: `${Math.random() * 3 + 1}px`,
+                left: `${Math.random() * 100}%`,
+                top: `${Math.random() * 100}%`,
+                animationDelay: `${Math.random() * 5}s`,
+                animationDuration: `${3 + Math.random() * 4}s`
+              }}
+            />
+          ))}
+        </div>
+        
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className={`max-w-4xl mx-auto text-center transition-all duration-1000 ${
+            isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+          }`}>
+            <div className="p-4 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-2xl inline-block mb-8 shadow-2xl">
+              <Mail className="h-16 w-16 text-white" />
+            </div>
+            
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6">
+              Email Migration & <span className="bg-gradient-to-r from-cyan-300 to-blue-300 bg-clip-text text-transparent">Setup</span>
+            </h1>
+            
+            <p className="text-xl text-cyan-100 mb-8 leading-relaxed">
+              Seamless email platform transitions with zero data loss and minimal downtime. 
+              We handle the technical complexity while you focus on your business.
+            </p>
+            
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <button 
+                onClick={() => document.getElementById('quote')?.scrollIntoView({ behavior: 'smooth' })}
+                className="bg-white text-cyan-600 font-semibold px-8 py-4 rounded-full hover:bg-cyan-50 transition-all duration-300 transform hover:scale-105 shadow-lg"
+              >
+                Get Free Quote
+              </button>
+              <Link 
+                to="/#contact"
+                className="border-2 border-white text-white font-semibold px-8 py-4 rounded-full hover:bg-white hover:text-cyan-600 transition-all duration-300 transform hover:scale-105"
+              >
+                Contact Us
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section className="py-20 bg-gray-800">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-16">
+              <h2 className="text-3xl sm:text-4xl font-bold text-white mb-6">
+                Why Choose Our <span className="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">Migration Service</span>
+              </h2>
+              <p className="text-xl text-gray-400 max-w-3xl mx-auto">
+                Professional email migration with enterprise-grade security and reliability
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-3 gap-8">
+              {features.map((feature, index) => {
+                const IconComponent = feature.icon;
+                return (
+                  <div key={index} className="bg-gray-900 rounded-2xl p-8 border border-gray-700 hover:border-cyan-500 transition-all duration-300 transform hover:-translate-y-2">
+                    <div className="p-4 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-xl inline-block mb-6">
+                      <IconComponent className="h-8 w-8 text-white" />
+                    </div>
+                    <h3 className="text-xl font-bold text-white mb-4">{feature.title}</h3>
+                    <p className="text-gray-400 leading-relaxed">{feature.description}</p>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Migration Process */}
+      <section className="py-20 bg-gray-900">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-16">
+              <h2 className="text-3xl sm:text-4xl font-bold text-white mb-6">
+                Our <span className="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">Migration Process</span>
+              </h2>
+              <p className="text-xl text-gray-400 max-w-3xl mx-auto">
+                A proven 5-step process that ensures smooth and secure email migration
+              </p>
+            </div>
+
+            <div className="space-y-8">
+              {migrationProcess.map((process, index) => (
+                <div key={index} className="flex items-start space-x-6 bg-gray-800 rounded-2xl p-8 border border-gray-700 hover:border-cyan-500 transition-all duration-300">
+                  <div className="flex-shrink-0">
+                    <div className="w-16 h-16 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-full flex items-center justify-center text-white font-bold text-xl">
+                      {process.step}
+                    </div>
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold text-white mb-3">{process.title}</h3>
+                    <p className="text-gray-400 leading-relaxed">{process.description}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Pricing Section */}
+      <section className="py-20 bg-gray-800">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-16">
+              <h2 className="text-3xl sm:text-4xl font-bold text-white mb-6">
+                Transparent <span className="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">Pricing</span>
+              </h2>
+              <p className="text-xl text-gray-400 max-w-3xl mx-auto">
+                Choose the migration package that fits your business needs
+              </p>
+            </div>
+
+            <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-8 border border-cyan-500/20">
+              <h3 className="text-2xl font-bold text-white mb-6">Service Pricing</h3>
+              <div className="grid md:grid-cols-3 gap-6">
+                <div className="bg-gray-700/50 rounded-xl p-6 border border-gray-600 hover:border-cyan-500/50 transition-all duration-300">
+                  <h4 className="text-lg font-semibold text-white mb-2">Basic</h4>
+                  <p className="text-gray-400 text-sm mb-4">Up to 10 email accounts</p>
+                  <div className="text-3xl font-bold text-cyan-400 mb-4">$299</div>
+                  <ul className="space-y-2 text-sm text-gray-300">
+                    <li>✓ Email migration</li>
+                    <li>✓ Basic support</li>
+                    <li>✓ Data backup</li>
+                  </ul>
+                </div>
+                <div className="bg-gray-700/50 rounded-xl p-6 border border-purple-500/50 relative">
+                  <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-cyan-500 to-purple-600 text-white px-4 py-1 rounded-full text-xs font-semibold">
+                    Most Popular
+                  </div>
+                  <h4 className="text-lg font-semibold text-white mb-2">Standard</h4>
+                  <p className="text-gray-400 text-sm mb-4">Up to 50 email accounts</p>
+                  <div className="text-3xl font-bold text-purple-400 mb-4">$799</div>
+                  <ul className="space-y-2 text-sm text-gray-300">
+                    <li>✓ Everything in Basic</li>
+                    <li>✓ Priority support</li>
+                    <li>✓ Advanced configuration</li>
+                    <li>✓ 30-day post-migration support</li>
+                  </ul>
+                </div>
+                <div className="bg-gray-700/50 rounded-xl p-6 border border-gray-600 hover:border-cyan-500/50 transition-all duration-300">
+                  <h4 className="text-lg font-semibold text-white mb-2">Enterprise</h4>
+                  <p className="text-gray-400 text-sm mb-4">50+ email accounts</p>
+                  <div className="text-3xl font-bold text-green-400 mb-4">Custom</div>
+                  <ul className="space-y-2 text-sm text-gray-300">
+                    <li>✓ Everything in Standard</li>
+                    <li>✓ Dedicated project manager</li>
+                    <li>✓ Custom integrations</li>
+                    <li>✓ 90-day support</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="py-20 bg-gradient-to-r from-cyan-600 to-blue-600">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-4xl mx-auto text-center">
+            <h2 className="text-3xl sm:text-4xl font-bold text-white mb-6">
+              Ready to Migrate Your Email System?
+            </h2>
+            <p className="text-xl text-cyan-100 mb-8">
+              Get a free consultation and detailed migration plan tailored to your needs
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link 
+                to="/#quote"
+                className="bg-white text-cyan-600 font-semibold px-8 py-4 rounded-full hover:bg-cyan-50 transition-all duration-300 transform hover:scale-105 shadow-lg inline-flex items-center justify-center space-x-2"
+              >
+                <span>Get Free Quote</span>
+                <ArrowRight className="h-5 w-5" />
+              </Link>
+              <a
+                href="https://wa.me/15551234567?text=Hi%20Mechinweb,%20I%27m%20interested%20in%20email%20migration%20services."
+                target="_blank"
+                rel="noopener noreferrer"
+                className="border-2 border-white text-white font-semibold px-8 py-4 rounded-full hover:bg-white hover:text-cyan-600 transition-all duration-300 transform hover:scale-105"
+              >
+                WhatsApp Chat
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+};
+
+export default EmailMigrationPage;
