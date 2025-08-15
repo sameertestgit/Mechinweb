@@ -1,6 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
-import { useEffect } from 'react';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import Header from './components/Header';
 import FloatingCTA from './components/FloatingCTA';
 import Hero from './components/Hero';
@@ -38,38 +37,36 @@ function App() {
   }, [location]);
 
   return (
-    <Router>
-      <div className="min-h-screen bg-gray-900">
-        <Header />
-        <Routes>
-          <Route path="/" element={
-            <>
-              <Hero />
-              <Services />
-              <About />
-              <Testimonials />
-              <Blog />
-              <Contact />
-              <FloatingCTA />
-            </>
-          } />
-          <Route path="/services/email-migration" element={<EmailMigrationPage />} />
-          <Route path="/services/email-security" element={<EmailSecurityPage />} />
-          <Route path="/services/ssl-setup" element={<SSLSetupPage />} />
-          <Route path="/services/cloud-management" element={<CloudManagementPage />} />
-          <Route path="/services/data-migration" element={<DataMigrationPage />} />
-          <Route path="/services/hosting-support" element={<HostingSupportPage />} />
-          <Route path="/blog/:slug" element={<BlogPostPage />} />
-          <Route path="/client/login" element={<ClientLogin />} />
-          <Route path="/client/register" element={<ClientRegister />} />
-          <Route path="/client/dashboard" element={<ClientDashboard />} />
-          <Route path="/client/purchase/:serviceId" element={<ServicePurchase />} />
-          <Route path="/payment-success" element={<PaymentSuccess />} />
-          <Route path="/invoice/:id" element={<InvoiceView />} />
-        </Routes>
-        <Footer />
-      </div>
-    </Router>
+    <div className="min-h-screen bg-gray-900">
+      <Header />
+      <Routes>
+        <Route path="/" element={
+          <>
+            <Hero />
+            <Services />
+            <About />
+            <Testimonials />
+            <Blog />
+            <Contact />
+            <FloatingCTA />
+          </>
+        } />
+        <Route path="/services/email-migration" element={<EmailMigrationPage />} />
+        <Route path="/services/email-security" element={<EmailSecurityPage />} />
+        <Route path="/services/ssl-setup" element={<SSLSetupPage />} />
+        <Route path="/services/cloud-management" element={<CloudManagementPage />} />
+        <Route path="/services/data-migration" element={<DataMigrationPage />} />
+        <Route path="/services/hosting-support" element={<HostingSupportPage />} />
+        <Route path="/blog/:slug" element={<BlogPostPage />} />
+        <Route path="/client/login" element={<ClientLogin />} />
+        <Route path="/client/register" element={<ClientRegister />} />
+        <Route path="/client/dashboard" element={<ClientDashboard />} />
+        <Route path="/client/purchase/:serviceId" element={<ServicePurchase />} />
+        <Route path="/payment-success" element={<PaymentSuccess />} />
+        <Route path="/invoice/:id" element={<InvoiceView />} />
+      </Routes>
+      <Footer />
+    </div>
   );
 };
 

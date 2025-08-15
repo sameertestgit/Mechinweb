@@ -39,11 +39,11 @@ const Footer: React.FC = () => {
   ];
 
   const quickLinks = [
-    { name: 'About Us', to: '/#about' },
-    { name: 'Services', to: '/#services' },
-    { name: 'Blog', to: '/#blog' },
-    { name: 'Contact', to: '/#contact' },
-    { name: 'Get Quote', to: '/#quote' }
+    { name: 'About Us', href: '/#about' },
+    { name: 'Services', href: '/#services' },
+    { name: 'Blog', href: '/#blog' },
+    { name: 'Contact', href: '/#contact' },
+    { name: 'Get Quote', href: '/#quote' }
   ];
 
   const socialLinks = [
@@ -120,7 +120,7 @@ const Footer: React.FC = () => {
               {quickLinks.map((link, index) => (
                 <li key={index}>
                   <button
-                    onClick={() => handleQuickLinkClick(link.to)}
+                    onClick={() => handleQuickLinkClick(link.href)}
                     className="text-gray-300 hover:text-cyan-400 transition-colors duration-300 text-sm"
                   >
                     {link.name}
