@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Mail, Lock, User, Phone, Eye, EyeOff } from 'lucide-react';
 import PasswordStrengthIndicator from '../components/PasswordStrengthIndicator';
 import { supabase } from '../lib/supabase';
-import { validateEmail, validatePassword, validatePhone, sanitizeInput } from '../utils/validation';
+import { validateEmail, validatePassword, validatePhone } from '../utils/validation';
 
 const ClientRegister = () => {
   const navigate = useNavigate();
@@ -18,8 +18,6 @@ const ClientRegister = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
   const [errors, setErrors] = useState<{[key: string]: string}>({});
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -35,41 +33,8 @@ const ClientRegister = () => {
     }
   };
 
-  const validateForm = () => {
-    const errors: Record<string, string> = {};
-
-    if (!formData.name.trim()) {
-      errors.name = 'Name is required';
-    }
-
-    if (!validateEmail(formData.email)) {
-      errors.email = 'Please enter a valid email address';
-    }
-
-    if (!validatePhone(formData.phone)) {
-      errors.phone = 'Please enter a valid phone number';
-    }
-
-    const passwordValidation = validatePassword(formData.password);
-    if (!passwordValidation.isValid) {
-      errors.password = passwordValidation.errors[0];
-    }
-
-    if (formData.password !== formData.confirmPassword) {
-      errors.confirmPassword = 'Passwords do not match';
-    }
-
-    setValidationErrors(errors);
-    return Object.keys(errors).length === 0;
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!validateForm()) {
-      return;
-    }
-
     
     // Validate form
     const newErrors: {[key: string]: string} = {};
@@ -80,6 +45,10 @@ const ClientRegister = () => {
     
     if (!validateEmail(formData.email)) {
       newErrors.email = 'Please enter a valid email address';
+    }
+
+    if (!validatePhone(formData.phone)) {
+      newErrors.phone = 'Please enter a valid phone number';
     }
     
     const passwordValidation = validatePassword(formData.password);
@@ -97,7 +66,7 @@ const ClientRegister = () => {
     }
 
     setIsLoading(true);
-    setError('');
+    setErrors({});
 
     try {
       // Register user with Supabase Auth
@@ -114,7 +83,7 @@ const ClientRegister = () => {
       });
 
       if (error) {
-        setError(error.message);
+        setErrors({ general: error.message });
         setIsLoading(false);
         return;
       }
@@ -137,51 +106,12 @@ const ClientRegister = () => {
           console.error('Error creating profile:', profileError);
         }
 
-        // Registration successful, redirect to dashboard
-        navigate('/client-dashboard');
-      }
-    } catch (err) {
-      setError('An unexpected error occurred. Please try again.');
-      const { data: authData, error: authError } = await supabase.auth.signUp({
-        email: formData.email,
-        password: formData.password,
-        options: {
-          data: {
-            name: sanitizeInput(formData.name),
-            phone: sanitizeInput(formData.phone),
-            company: sanitizeInput(formData.company)
-          }
-        }
-      });
-
-      if (authError) {
-        throw authError;
-      }
-
-      if (authData.user) {
-        // Insert additional client data
-        const { error: profileError } = await supabase
-          .from('clients')
-          .insert([
-            {
-              id: authData.user.id,
-              name: sanitizeInput(formData.name),
-              email: formData.email,
-              phone: sanitizeInput(formData.phone),
-              company: sanitizeInput(formData.company)
-            }
-          ]);
-
-        if (profileError) {
-          console.error('Profile creation error:', profileError);
-        }
-
         alert('Registration successful! Please check your email to verify your account.');
         navigate('/client/login');
       }
-    } catch (error) {
+    } catch (err) {
       console.error('Registration error:', error);
-      setErrors({ general: error.message || 'Registration failed. Please try again.' });
+      setErrors({ general: 'Registration failed. Please try again.' });
     } finally {
       setIsLoading(false);
     }

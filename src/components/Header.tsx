@@ -6,7 +6,6 @@ const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isServicesOpen, setIsServicesOpen] = useState(false);
-  const [isClientMenuOpen, setIsClientMenuOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const navigate = useNavigate();
 
@@ -42,11 +41,11 @@ const Header = () => {
   };
 
   const navItems = [
-    { name: 'Home', href: '#home' },
-    { name: 'About', href: '#about' },
-    { name: 'Services', href: '#services', hasDropdown: true },
-    { name: 'Blog', href: '#blog' },
-    { name: 'Contact', href: '#contact' }
+    { name: 'Home', href: '/#home' },
+    { name: 'About', href: '/#about' },
+    { name: 'Services', href: '/#services', hasDropdown: true },
+    { name: 'Blog', href: '/#blog' },
+    { name: 'Contact', href: '/#contact' }
   ];
 
   const services = [
@@ -58,29 +57,20 @@ const Header = () => {
     { name: 'Hosting Support', href: '/services/hosting-support' }
   ];
 
-  const navigateToService = (href: string) => {
-    navigate(href);
-    setIsServicesOpen(false);
-    
+  const handleNavClick = (href: string) => {
     if (href.startsWith('/#')) {
-      // If we're not on the home page, navigate to home first
-      if (window.location.pathname !== '/') {
-        navigate('/');
-        // Wait for navigation to complete, then scroll
-        setTimeout(() => {
-          const element = document.querySelector(href.substring(1));
-          if (element) {
-            element.scrollIntoView({ behavior: 'smooth' });
-          }
-        }, 100);
-      } else {
-        // We're already on home page, just scroll
-        const element = document.querySelector(href.substring(1));
+      navigate('/');
+      setTimeout(() => {
+        const element = document.getElementById(href.substring(2));
         if (element) {
           element.scrollIntoView({ behavior: 'smooth' });
         }
-      }
+      }, 100);
+    } else {
+      navigate(href);
     }
+    setIsServicesOpen(false);
+    setIsMenuOpen(false);
   };
 
   return (
@@ -115,8 +105,175 @@ const Header = () => {
                   onMouseEnter={() => item.hasDropdown && setIsServicesOpen(true)}
                   onMouseLeave={() => item.hasDropdown && setIsServicesOpen(false)}
                 >
-                  <a
-                    href={item.href}
+                  {item.hasDropdown ? (
+                    <button
+                      className={`flex items-center space-x-1 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
+                        isScrolled 
+                          ? 'text-gray-300 hover:text-cyan-400 hover:bg-gray-800' 
+                          : 'text-white hover:text-cyan-300 hover:bg-white/10'
+                      }`}
+                    >
+                      <span>{item.name}</span>
+                      <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${
+                        isServicesOpen ? 'rotate-180' : ''
+                      }`} />
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => handleNavClick(item.href)}
+                      className={`flex items-center space-x-1 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
+                        isScrolled 
+                          ? 'text-gray-300 hover:text-cyan-400 hover:bg-gray-800' 
+                          : 'text-white hover:text-cyan-300 hover:bg-white/10'
+                      }`}
+                    >
+                      <span>{item.name}</span>
+                    </button>
+                  )}
+                  
+                  {/* Services Dropdown */}
+                  {item.hasDropdown && (
+                    <div className={`absolute top-full left-0 mt-2 w-64 bg-gray-800 rounded-xl shadow-2xl border border-gray-700 overflow-hidden transition-all duration-300 transform ${
+                      isServicesOpen ? 'opacity-100 translate-y-0 visible' : 'opacity-0 -translate-y-2 invisible'
+                    }`}>
+                      <div className="py-2">
+                        {services.map((service, index) => (
+                          <button
+                            key={index}
+                            onClick={() => navigate(service.href)}
+                            className="w-full text-left px-4 py-3 text-sm text-gray-300 hover:bg-gray-700 hover:text-cyan-400 transition-colors duration-200 flex items-center space-x-2"
+                          >
+                            <div className="w-2 h-2 bg-cyan-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
+                            <span>{service.name}</span>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Auth Buttons */}
+          <div className="hidden md:flex items-center space-x-4">
+            {isLoggedIn ? (
+              <>
+                <Link
+                  to="/client/dashboard"
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                    isScrolled 
+                      ? 'text-gray-300 hover:text-cyan-400 hover:bg-gray-800' 
+                      : 'text-white hover:text-cyan-300 hover:bg-white/10'
+                  }`}
+                >
+                  Dashboard
+                </Link>
+                <button
+                  onClick={handleLogout}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                    isScrolled 
+                      ? 'text-gray-300 hover:text-cyan-400 hover:bg-gray-800' 
+                      : 'text-white hover:text-cyan-300 hover:bg-white/10'
+                  }`}
+                >
+                  Logout
+                </button>
+              </>
+            ) : (
+              <>
+                <Link
+                  to="/client/login"
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                    isScrolled 
+                      ? 'text-gray-300 hover:text-cyan-400 hover:bg-gray-800' 
+                      : 'text-white hover:text-cyan-300 hover:bg-white/10'
+                  }`}
+                >
+                  Login
+                </Link>
+                <Link
+                  to="/client/register"
+                  className="bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:from-cyan-600 hover:to-blue-700 transition-all duration-300 transform hover:scale-105"
+                >
+                  Sign Up
+                </Link>
+              </>
+            )}
+          </div>
+
+          {/* Mobile menu button */}
+          <button
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            className={`md:hidden inline-flex items-center justify-center p-2 rounded-md transition-colors duration-200 ${
+              isScrolled 
+                ? 'text-gray-300 hover:text-cyan-400 hover:bg-gray-800' 
+                : 'text-white hover:text-cyan-300 hover:bg-white/10'
+            }`}
+          >
+            {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+          </button>
+        </div>
+
+        {/* Mobile Navigation */}
+        {isMenuOpen && (
+          <div className="md:hidden">
+            <div className="px-2 pt-2 pb-3 space-y-1 bg-gray-800/95 backdrop-blur-md rounded-lg mt-2 border border-gray-700">
+              {navItems.map((item) => (
+                <button
+                  key={item.name}
+                  onClick={() => handleNavClick(item.href)}
+                  className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-cyan-400 hover:bg-gray-700 transition-colors duration-200"
+                >
+                  {item.name}
+                </button>
+              ))}
+              
+              <div className="border-t border-gray-700 pt-4 mt-4">
+                {isLoggedIn ? (
+                  <>
+                    <Link
+                      to="/client/dashboard"
+                      className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-cyan-400 hover:bg-gray-700 transition-colors duration-200"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      Dashboard
+                    </Link>
+                    <button
+                      onClick={handleLogout}
+                      className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-cyan-400 hover:bg-gray-700 transition-colors duration-200"
+                    >
+                      Logout
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <Link
+                      to="/client/login"
+                      className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-cyan-400 hover:bg-gray-700 transition-colors duration-200"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      Login
+                    </Link>
+                    <Link
+                      to="/client/register"
+                      className="block px-3 py-2 rounded-md text-base font-medium bg-gradient-to-r from-cyan-500 to-blue-600 text-white hover:from-cyan-600 hover:to-blue-700 transition-all duration-300"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      Sign Up
+                    </Link>
+                  </>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+      </nav>
+    </header>
+  );
+};
+
+export default Header;
                     className={`flex items-center space-x-1 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
                       isScrolled 
                         ? 'text-gray-300 hover:text-cyan-400 hover:bg-gray-800' 
