@@ -83,7 +83,14 @@ const ClientRegister = () => {
       });
 
       if (error) {
-        setErrors({ general: error.message });
+        if (error.code === 'user_already_exists') {
+          setErrors({ 
+            general: 'This email is already registered. Please try logging in instead.',
+            email: 'Email already exists'
+          });
+        } else {
+          setErrors({ general: error.message });
+        }
         setIsLoading(false);
         return;
       }
