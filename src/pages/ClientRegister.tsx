@@ -111,9 +111,10 @@ const ClientRegister = () => {
 
         if (profileError) {
           console.error('Error creating profile:', profileError);
+          // Don't show this error to user as auth was successful
         }
 
-        alert('Registration successful! Please check your email to verify your account.');
+        alert('Registration successful! You can now log in to your account.');
         navigate('/client/login');
       }
     } catch (err) {

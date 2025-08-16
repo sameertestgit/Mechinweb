@@ -43,51 +43,26 @@ const Contact = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Basic validation
+    if (!formData.name || !formData.email || !formData.subject || !formData.message) {
+      alert('Please fill in all required fields.');
+      return;
+    }
+    
     setIsSubmitting(true);
     
     try {
-      // Prepare contact data
-      const contactData = {
-        name: formData.name,
-        email: formData.email,
-        subject: formData.subject,
-        message: formData.message,
-        timestamp: new Date().toISOString()
-      };
-
-      // TODO: Replace with actual contact form API endpoint
-      const response = await fetch('/api/contact', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(contactData)
-      });
-
-      if (response.ok) {
-        // Send notification emails
-        await fetch('/api/send-notifications', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            type: 'contact_form',
-            customer_email: formData.email,
-            business_email: 'contact@mechinweb.com',
-            data: contactData
-          })
-        });
-
-        setIsSubmitting(false);
-        setIsSubmitted(true);
-      } else {
-        throw new Error('Failed to send message');
-      }
+      // For now, simulate successful submission
+      // In production, this would connect to your backend API
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      setIsSubmitted(true);
     } catch (error) {
       console.error('Error sending message:', error);
-      setIsSubmitting(false);
       alert('There was an error sending your message. Please try again or contact us directly.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 

@@ -56,7 +56,11 @@ const ClientLogin = () => {
       });
 
       if (error) {
-        setErrors({ general: error.message });
+        if (error.message.includes('Invalid login credentials')) {
+          setErrors({ general: 'Invalid email or password. Please check your credentials and try again.' });
+        } else {
+          setErrors({ general: error.message });
+        }
         return;
       }
 
