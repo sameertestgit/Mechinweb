@@ -18,9 +18,9 @@ const ClientRegister = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [errors, setErrors] = useState<{[key: string]: string}>({});
+  const [errors, setErrors] = useState({});
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({
       ...formData,
@@ -33,11 +33,11 @@ const ClientRegister = () => {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
     // Validate form
-    const newErrors: {[key: string]: string} = {};
+    const newErrors = {};
     
     if (!formData.name.trim()) {
       newErrors.name = 'Name is required';
@@ -95,7 +95,12 @@ const ClientRegister = () => {
         return;
       }
 
-      if (data.user) {
+      // Check if a user was returned. This happens when email confirmation is off.
+      // If `data.session` is null, it means an email was sent for confirmation.
+      if (data.user && data.session) {
+        // This block is for when email confirmation is disabled.
+        // It handles creating the profile and sending the welcome email.
+        
         // Create client profile in our clients table
         const { error: profileError } = await supabase
           .from('clients')
@@ -113,12 +118,28 @@ const ClientRegister = () => {
           console.error('Error creating profile:', profileError);
           // Don't show this error to user as auth was successful
         }
+        
+        // Call the Netlify function to send the welcome email
+        try {
+          await fetch('/.netlify/functions/send-welcome-email', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name: formData.name, email: formData.email })
+          });
+        } catch (emailError) {
+          console.error('Failed to send welcome email:', emailError);
+        }
 
         alert('Registration successful! You can now log in to your account.');
         navigate('/client/login');
+      } else if (data.session === null) {
+        // This is the common case when email confirmation is enabled.
+        // It tells the user to check their email.
+        alert('Registration successful! Please check your email to confirm your account.');
+        navigate('/'); // Or navigate to a dedicated confirmation page.
       }
     } catch (err) {
-      console.error('Registration error:', error);
+      console.error('Registration error:', err);
       setErrors({ general: 'Registration failed. Please try again.' });
     } finally {
       setIsLoading(false);
