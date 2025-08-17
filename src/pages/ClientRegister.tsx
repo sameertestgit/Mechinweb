@@ -18,9 +18,9 @@ const ClientRegister = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [errors, setErrors] = useState({});
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const handleInputChange = (e) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData({
       ...formData,
@@ -33,11 +33,11 @@ const ClientRegister = () => {
     }
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     
     // Validate form
-    const newErrors = {};
+    const newErrors: Record<string, string> = {};
     
     if (!formData.name.trim()) {
       newErrors.name = 'Name is required';
@@ -97,6 +97,12 @@ const ClientRegister = () => {
 
       // Destructure the user object from the returned data
       const { user } = authData;
+
+      if (!user) {
+        setErrors({ general: 'Could not create user. Please try again.' });
+        setIsLoading(false);
+        return;
+      }
 
       // The user object is returned on successful sign-up, whether or not a session exists.
       // We can now create the client's profile in the `clients` table.
