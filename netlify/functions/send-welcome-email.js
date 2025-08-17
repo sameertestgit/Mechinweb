@@ -9,7 +9,7 @@ exports.handler = async (event, context) => {
     const { name, email } = JSON.parse(event.body);
 
     const emailTransporter = nodemailer.createTransport({
-      host: 'smtppro.zoho.in', // Zoho SMTP server host
+      host: 'smtp.zoho.in', // Zoho SMTP server host
       port: 465, // Zoho SMTP port for SSL
       secure: true, // Use SSL/TLS
       auth: {
