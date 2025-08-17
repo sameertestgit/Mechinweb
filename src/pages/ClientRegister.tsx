@@ -70,7 +70,7 @@ const ClientRegister = () => {
 
     try {
       // Register user with Supabase Auth
-      const { data, error } = await supabase.auth.signUp({
+      const { data: authData, error } = await supabase.auth.signUp({
         email: formData.email,
         password: formData.password,
         options: {
@@ -95,49 +95,44 @@ const ClientRegister = () => {
         return;
       }
 
-      // Check if a user was returned. This happens when email confirmation is off.
-      // If `data.session` is null, it means an email was sent for confirmation.
-      if (data.user && data.session) {
-        // This block is for when email confirmation is disabled.
-        // It handles creating the profile and sending the welcome email.
-        
-        // Create client profile in our clients table
-        const { error: profileError } = await supabase
-          .from('clients')
-          .insert([
-            {
-              id: data.user.id,
-              name: formData.name,
-              email: formData.email,
-              phone: formData.phone,
-              company: formData.company,
-            }
-          ]);
+      // Destructure the user object from the returned data
+      const { user } = authData;
 
-        if (profileError) {
-          console.error('Error creating profile:', profileError);
-          // Don't show this error to user as auth was successful
-        }
-        
-        // Call the Netlify function to send the welcome email
-        try {
-          await fetch('/.netlify/functions/send-welcome-email', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ name: formData.name, email: formData.email })
-          });
-        } catch (emailError) {
-          console.error('Failed to send welcome email:', emailError);
-        }
+      // The user object is returned on successful sign-up, whether or not a session exists.
+      // We can now create the client's profile in the `clients` table.
+      const { error: profileError } = await supabase
+        .from('clients')
+        .insert([
+          {
+            id: user.id,
+            name: formData.name,
+            email: formData.email,
+            phone: formData.phone,
+            company: formData.company,
+          }
+        ]);
 
-        alert('Registration successful! You can now log in to your account.');
-        navigate('/client/login');
-      } else if (data.session === null) {
-        // This is the common case when email confirmation is enabled.
-        // It tells the user to check their email.
-        alert('Registration successful! Please check your email to confirm your account.');
-        navigate('/'); // Or navigate to a dedicated confirmation page.
+      if (profileError) {
+        console.error('Error creating profile:', profileError);
+        // Don't show this error to user as auth was successful
       }
+      
+      // Call the Netlify function to send the welcome email
+      try {
+        await fetch('/.netlify/functions/send-welcome-email', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name: formData.name, email: formData.email })
+        });
+      } catch (emailError) {
+        console.error('Failed to send welcome email:', emailError);
+      }
+
+      // This is the common case when email confirmation is enabled.
+      // It tells the user to check their email.
+      alert('Registration successful! Please check your email to confirm your account.');
+      navigate('/client/login'); // Redirect to login page
+      
     } catch (err) {
       console.error('Registration error:', err);
       setErrors({ general: 'Registration failed. Please try again.' });
@@ -231,6 +226,7 @@ const ClientRegister = () => {
                       placeholder="Enter your phone number"
                     />
                   </div>
+                  {errors.phone && <p className="text-red-400 text-sm mt-1">{errors.phone}</p>}
                 </div>
 
                 <div>
