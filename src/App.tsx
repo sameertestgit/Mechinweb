@@ -18,11 +18,17 @@ import HostingSupportPage from './pages/HostingSupportPage';
 import BlogPostPage from './pages/BlogPostPage';
 import ClientLogin from './pages/ClientLogin';
 import ClientRegister from './pages/ClientRegister';
-import ClientDashboard from './pages/ClientDashboard';
 import ServicePurchase from './pages/ServicePurchase';
 import PaymentSuccess from './pages/PaymentSuccess';
 import InvoiceView from './pages/InvoiceView';
 import Testimonials from './components/Testimonials';
+import DashboardLayout from './components/dashboard/DashboardLayout';
+import DashboardOverview from './pages/dashboard/DashboardOverview';
+import ServicesPage from './pages/dashboard/ServicesPage';
+import PaymentsPage from './pages/dashboard/PaymentsPage';
+import OrdersPage from './pages/dashboard/OrdersPage';
+import InvoicesPage from './pages/dashboard/InvoicesPage';
+import ProfilePage from './pages/dashboard/ProfilePage';
 
 function App() {
   const location = useLocation();
@@ -60,12 +66,19 @@ function App() {
         <Route path="/blog/:slug" element={<BlogPostPage />} />
         <Route path="/client/login" element={<ClientLogin />} />
         <Route path="/client/register" element={<ClientRegister />} />
-        <Route path="/client/dashboard" element={<ClientDashboard />} />
+        <Route path="/client/*" element={<DashboardLayout />}>
+          <Route path="dashboard" element={<DashboardOverview />} />
+          <Route path="services" element={<ServicesPage />} />
+          <Route path="payments" element={<PaymentsPage />} />
+          <Route path="orders" element={<OrdersPage />} />
+          <Route path="invoices" element={<InvoicesPage />} />
+          <Route path="profile" element={<ProfilePage />} />
+        </Route>
         <Route path="/client/purchase/:serviceId" element={<ServicePurchase />} />
         <Route path="/payment-success" element={<PaymentSuccess />} />
         <Route path="/invoice/:id" element={<InvoiceView />} />
       </Routes>
-      <Footer />
+      {!location.pathname.startsWith('/client/') && <Footer />}
     </div>
   );
 };

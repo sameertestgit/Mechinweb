@@ -96,7 +96,7 @@ const EmailMigrationPage = () => {
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <button 
-                onClick={() => document.getElementById('quote')?.scrollIntoView({ behavior: 'smooth' })}
+                onClick={() => window.location.href = '/#quote'}
                 className="bg-white text-cyan-600 font-semibold px-8 py-4 rounded-full hover:bg-cyan-50 transition-all duration-300 transform hover:scale-105 shadow-lg"
               >
                 Get Free Quote

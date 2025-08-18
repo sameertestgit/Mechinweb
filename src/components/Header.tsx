@@ -59,13 +59,20 @@ const Header = () => {
 
   const handleNavClick = (href: string) => {
     if (href.startsWith('/#')) {
-      navigate('/');
-      setTimeout(() => {
+      if (window.location.pathname !== '/') {
+        navigate('/');
+        setTimeout(() => {
+          const element = document.getElementById(href.substring(2));
+          if (element) {
+            element.scrollIntoView({ behavior: 'smooth' });
+          }
+        }, 100);
+      } else {
         const element = document.getElementById(href.substring(2));
         if (element) {
           element.scrollIntoView({ behavior: 'smooth' });
         }
-      }, 100);
+      }
     } else {
       navigate(href);
     }

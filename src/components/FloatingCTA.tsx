@@ -6,7 +6,7 @@ const FloatingCTA: React.FC = () => {
     <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-3">
       {/* WhatsApp Button */}
       <a
-        href="https://wa.me/1234567890"
+        href="https://wa.me/15551234567?text=Hi%20Mechinweb,%20I%27m%20interested%20in%20your%20IT%20services."
         target="_blank"
         rel="noopener noreferrer"
         className="bg-green-500 hover:bg-green-600 text-white p-3 rounded-full shadow-lg transition-all duration-300 hover:scale-110 group"
@@ -17,7 +17,7 @@ const FloatingCTA: React.FC = () => {
       
       {/* Call Button */}
       <a
-        href="tel:+1234567890"
+        href="tel:+15551234567"
         className="bg-blue-500 hover:bg-blue-600 text-white p-3 rounded-full shadow-lg transition-all duration-300 hover:scale-110 group"
         aria-label="Call us"
       >

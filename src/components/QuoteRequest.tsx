@@ -255,7 +255,7 @@ const QuoteRequest: React.FC = () => {
 
             <div className="text-center">
               <button
-                type="submit"
+                onClick={() => setShowThankYou(false)}
                 disabled={isSubmitting}
                 className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-cyan-500 to-purple-600 text-white font-semibold rounded-lg hover:from-cyan-600 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 focus:ring-offset-gray-800 transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
               >
@@ -272,7 +272,7 @@ const QuoteRequest: React.FC = () => {
                 )}
               </button>
             </div>
-          </form>
+                href="https://wa.me/15551234567?text=Hi%20Mechinweb,%20I%20just%20submitted%20a%20quote%20request."
         </div>
       </div>
     </section>
