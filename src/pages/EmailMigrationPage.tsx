@@ -56,6 +56,25 @@ const EmailMigrationPage = () => {
     }
   ];
 
+  const faqs = [
+    {
+      question: "What credentials do I need to provide for email migration?",
+      answer: "You'll need to provide admin credentials for both your source and destination email platforms. This includes admin usernames, passwords, and any necessary API keys or app passwords. We ensure all credentials are handled securely and deleted after migration."
+    },
+    {
+      question: "How long does the migration process take?",
+      answer: "Migration time depends on the amount of data and number of accounts. Basic migrations (up to 10 accounts) typically take 24-48 hours, while larger migrations may take 3-5 business days. We provide regular updates throughout the process."
+    },
+    {
+      question: "Will there be any downtime during migration?",
+      answer: "We use advanced migration techniques to minimize downtime. Most migrations can be completed with zero downtime by running both systems in parallel during the transition period."
+    },
+    {
+      question: "What email platforms do you support?",
+      answer: "We support all major email platforms including Gmail/Google Workspace, Microsoft 365/Exchange, Yahoo, Outlook.com, cPanel email, Plesk email, and most IMAP/POP3 providers."
+    }
+  ];
+
   return (
     <div className="min-h-screen bg-gray-900 pt-20">
       {/* Hero Section */}
@@ -227,6 +246,31 @@ const EmailMigrationPage = () => {
                   </ul>
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* FAQs Section */}
+      <section className="py-20 bg-gray-800">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-4xl mx-auto">
+            <div className="text-center mb-16">
+              <h2 className="text-3xl sm:text-4xl font-bold text-white mb-6">
+                Frequently Asked <span className="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">Questions</span>
+              </h2>
+              <p className="text-xl text-gray-400">
+                Everything you need to know about our email migration service
+              </p>
+            </div>
+
+            <div className="space-y-6">
+              {faqs.map((faq, index) => (
+                <div key={index} className="bg-gray-900 rounded-2xl p-6 border border-gray-700">
+                  <h3 className="text-lg font-bold text-white mb-3">{faq.question}</h3>
+                  <p className="text-gray-400 leading-relaxed">{faq.answer}</p>
+                </div>
+              ))}
             </div>
           </div>
         </div>
