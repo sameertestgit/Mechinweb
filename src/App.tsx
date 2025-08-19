@@ -29,6 +29,7 @@ import PaymentsPage from './pages/dashboard/PaymentsPage';
 import OrdersPage from './pages/dashboard/OrdersPage';
 import InvoicesPage from './pages/dashboard/InvoicesPage';
 import ProfilePage from './pages/dashboard/ProfilePage';
+import AcronisSetupPage from './pages/AcronisSetupPage';
 
 function App() {
   const location = useLocation();
@@ -63,6 +64,7 @@ function App() {
         <Route path="/services/cloud-management" element={<CloudManagementPage />} />
         <Route path="/services/data-migration" element={<DataMigrationPage />} />
         <Route path="/services/hosting-support" element={<HostingSupportPage />} />
+        <Route path="/services/acronis-setup" element={<AcronisSetupPage />} />
         <Route path="/blog/:slug" element={<BlogPostPage />} />
         <Route path="/client/login" element={<ClientLogin />} />
         <Route path="/client/register" element={<ClientRegister />} />

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import { getCurrentUser, redirectAfterLogin } from '../lib/auth';
 import { validateEmail } from '../utils/validation';
 
 const ClientLogin = () => {
@@ -65,8 +66,14 @@ const ClientLogin = () => {
       }
 
       if (data.user) {
-        // Login successful, redirect to dashboard
-        navigate('/client/dashboard');
+        // Get user profile and redirect based on role
+        const userProfile = await getCurrentUser();
+        if (userProfile) {
+          const redirectPath = redirectAfterLogin(userProfile);
+          navigate(redirectPath);
+        } else {
+          navigate('/client/dashboard');
+        }
       }
     } catch (error) {
       console.error('Login error:', error);

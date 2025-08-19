@@ -9,7 +9,7 @@ const Hero = () => {
   }, []);
 
   const scrollToQuote = () => {
-    document.getElementById('quote')?.scrollIntoView({ behavior: 'smooth' });
+    document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
   };
 
   return (
@@ -82,7 +82,7 @@ const Hero = () => {
               className="group relative px-8 py-4 bg-white text-cyan-600 font-semibold rounded-full hover:bg-cyan-50 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
             >
               <span className="flex items-center space-x-2">
-                <span>Get a Free Quote</span>
+                <span>Contact Us</span>
                 <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform duration-300" />
               </span>
             </button>

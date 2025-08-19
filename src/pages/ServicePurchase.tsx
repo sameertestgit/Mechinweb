@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, CreditCard, Lock, Calendar } from 'lucide-react';
-import { loadStripe } from '@stripe/stripe-js';
+import { PaymentService } from '../lib/payments';
+import { PricingService } from '../lib/pricing';
 import CurrencyToggle from '../components/CurrencyToggle';
-import { convertUSDToINR } from '../utils/currency';
-
-const stripePromise = loadStripe('pk_test_your_publishable_key_here');
 
 const ServicePurchase = () => {
   const { serviceId } = useParams();
@@ -13,55 +11,17 @@ const ServicePurchase = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [selectedPackage, setSelectedPackage] = useState('basic');
   const [selectedCurrency, setSelectedCurrency] = useState<'USD' | 'INR'>('USD');
-  const [convertedAmount, setConvertedAmount] = useState(0);
+  const [localizedPrice, setLocalizedPrice] = useState(0);
 
-  const services = {
-    'email-migration': {
-      name: 'Email Migration & Setup',
-      description: 'Professional email migration with zero downtime and complete data integrity',
-      packages: {
-        basic: { name: 'Basic', price: 299, features: ['Up to 10 accounts', 'Email migration', 'Basic support', 'Data backup'] },
-        standard: { name: 'Standard', price: 799, features: ['Up to 50 accounts', 'Everything in Basic', 'Priority support', 'Advanced configuration', '30-day post-migration support'] },
-        enterprise: { name: 'Enterprise', price: 1499, features: ['50+ accounts', 'Everything in Standard', 'Dedicated project manager', 'Custom integrations', '90-day support'] }
-      }
-    },
-    'email-security': {
-      name: 'Domain & Email Security',
-      description: 'Complete DNS and email authentication setup including SPF, DKIM, and DMARC',
-      packages: {
-        basic: { name: 'Basic Setup', price: 199, features: ['SPF, DKIM, DMARC setup', 'Basic DNS configuration', 'Email support'] },
-        advanced: { name: 'Advanced', price: 399, features: ['Everything in Basic', 'Security monitoring', 'Monthly reports', 'Priority support'] },
-        enterprise: { name: 'Enterprise', price: 799, features: ['Everything in Advanced', 'Custom policies', '24/7 monitoring', 'Dedicated security expert'] }
-      }
-    },
-    'ssl-setup': {
-      name: 'SSL & HTTPS Setup',
-      description: 'Professional SSL certificate installation and automated renewal systems',
-      packages: {
-        basic: { name: 'Single Domain', price: 149, features: ['SSL certificate installation', 'HTTPS configuration', 'Security validation', 'Basic support'] },
-        standard: { name: 'Multi-Domain', price: 299, features: ['Up to 5 domains', 'Everything in Single Domain', 'Centralized management', 'Priority support'] },
-        enterprise: { name: 'Wildcard SSL', price: 499, features: ['Unlimited subdomains', 'Everything in Multi-Domain', 'Auto-renewal setup', 'Advanced monitoring', '24/7 support'] }
-      }
-    },
-    'cloud-management': {
-      name: 'Cloud Suite Management',
-      description: 'Expert administration of Google Workspace and Microsoft 365 environments',
-      packages: {
-        basic: { name: 'Setup', price: 399, features: ['Initial setup', 'User configuration', 'Basic training', 'Documentation'] },
-        standard: { name: 'Advanced', price: 299, features: ['Monthly management', 'Everything in Setup', 'Ongoing management', 'User support', 'Monthly optimization', 'Security monitoring'], recurring: true },
-        enterprise: { name: 'Enterprise', price: 599, features: ['Everything in Advanced', 'Dedicated manager', '24/7 support', 'Custom integrations', 'Advanced analytics'], recurring: true }
-      }
-    }
-  };
-
-  const service = services[serviceId as keyof typeof services];
-  const currentPackage = service?.packages[selectedPackage as keyof typeof service.packages];
+  const service = PricingService.getService(serviceId as string);
+  const currentPackage = service?.tiers[selectedPackage as keyof typeof service.tiers];
 
   useEffect(() => {
-    if (currentPackage) {
-      convertUSDToINR(currentPackage.price).then(setConvertedAmount);
+    if (currentPackage && serviceId) {
+      PricingService.getLocalizedPrice(serviceId, selectedPackage, selectedCurrency)
+        .then(setLocalizedPrice);
     }
-  }, [currentPackage]);
+  }, [currentPackage, selectedPackage, selectedCurrency, serviceId]);
 
   const handleCurrencyChange = (currency: 'USD' | 'INR', amount: number) => {
     setSelectedCurrency(currency);
@@ -71,31 +31,33 @@ const ServicePurchase = () => {
     setIsLoading(true);
     
     try {
-      // Create payment intent
-      const response = await fetch('/api/create-payment-intent', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          serviceId,
-          packageType: selectedPackage,
-          amount: currentPackage?.price
-        })
-      });
+      if (!currentPackage || !serviceId) {
+        throw new Error('Invalid service or package');
+      }
 
-      const { clientSecret } = await response.json();
+      // Create payment intent
+      const paymentIntent = await PaymentService.createPaymentIntent(
+        serviceId,
+        selectedPackage,
+        currentPackage.price,
+        selectedCurrency.toLowerCase()
+      );
       
-      // Redirect to Stripe Checkout or handle payment
-      const stripe = await stripePromise;
-      if (stripe) {
-        const { error } = await stripe.confirmCardPayment(clientSecret);
+      // Confirm payment
+      const success = await PaymentService.confirmPayment(paymentIntent.client_secret);
+      
+      if (success) {
+        // Process payment success
+        const result = await PaymentService.processPaymentSuccess(
+          paymentIntent.id,
+          serviceId,
+          selectedPackage,
+          currentPackage.price
+        );
         
-        if (!error) {
-          navigate('/client/payment-success');
-        } else {
-          alert('Payment failed. Please try again.');
-        }
+        navigate(`/payment-success?order=${result.orderId}&invoice=${result.invoiceId}`);
+      } else {
+        alert('Payment failed. Please try again.');
       }
     } catch (error) {
       console.error('Payment error:', error);
@@ -161,11 +123,10 @@ const ServicePurchase = () => {
                           <span className="text-2xl font-bold text-cyan-400">
                             ${pkg.price}
                           </span>
-                          {pkg.recurring && <span className="text-gray-400 text-sm">/month</span>}
                         </div>
                       </div>
                       <ul className="space-y-2">
-                        {pkg.features.map((feature, index) => (
+                        {tier.features.map((feature, index) => (
                           <li key={index} className="flex items-center text-gray-300">
                             <div className="w-2 h-2 bg-cyan-500 rounded-full mr-3"></div>
                             {feature}
@@ -202,11 +163,9 @@ const ServicePurchase = () => {
                     <hr className="border-gray-700" />
                     <div className="flex justify-between text-lg font-bold">
                       <span className="text-white">Total:</span>
-                      <CurrencyToggle 
-                        usdAmount={currentPackage?.price || 0}
-                        onCurrencyChange={handleCurrencyChange}
-                        className="text-cyan-400"
-                      />
+                      <span className="text-cyan-400">
+                        {selectedCurrency === 'USD' ? '$' : '₹'}{localizedPrice || currentPackage?.price || 0}
+                      </span>
                     </div>
                   </div>
 

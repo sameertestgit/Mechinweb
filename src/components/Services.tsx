@@ -63,6 +63,28 @@ const Services: React.FC = () => {
     }
   ];
 
+  // Add Acronis service to the services array
+  services.push({
+    icon: Database,
+    title: 'Acronis Account Setup (Data Backup & Recovery)',
+    description: 'Professional Acronis backup solution setup and configuration for comprehensive data protection.',
+    features: ['Account creation & setup', 'Multi-device configuration', 'Automated backup schedules'],
+    link: '/services/acronis-setup',
+    gradient: 'from-blue-500 to-indigo-500'
+  });
+
+  const allServices = [
+    ...services.slice(0, 6), // Original 6 services
+    {
+      icon: Database,
+      title: 'Acronis Account Setup (Data Backup & Recovery)',
+      description: 'Professional Acronis backup solution setup and configuration for comprehensive data protection.',
+      features: ['Account creation & setup', 'Multi-device configuration', 'Automated backup schedules'],
+      link: '/services/acronis-setup',
+      gradient: 'from-blue-500 to-indigo-500'
+    }
+  ];
+
   return (
     <section id="services" className="py-20 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 relative overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/5 to-purple-500/5"></div>
@@ -81,7 +103,7 @@ const Services: React.FC = () => {
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {services.map((service, index) => {
+          {allServices.map((service, index) => {
             const IconComponent = service.icon;
             return (
               <div

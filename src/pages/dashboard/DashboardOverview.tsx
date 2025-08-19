@@ -11,12 +11,46 @@ import {
   DollarSign
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { RealtimeService } from '../../lib/realtime';
+import { getCurrentUser } from '../../lib/auth';
 
 const DashboardOverview = () => {
   const [isVisible, setIsVisible] = useState(false);
+  const [orders, setOrders] = useState([]);
+  const [invoices, setInvoices] = useState([]);
 
   useEffect(() => {
     setIsVisible(true);
+    
+    // Set up real-time subscriptions
+    const setupRealtimeSubscriptions = async () => {
+      try {
+        const user = await getCurrentUser();
+        if (user) {
+          // Subscribe to order updates
+          const unsubscribeOrders = RealtimeService.subscribeToOrders(user.id, (payload) => {
+            console.log('Order update:', payload);
+            // Update orders state based on payload
+          });
+
+          // Subscribe to invoice updates
+          const unsubscribeInvoices = RealtimeService.subscribeToInvoices(user.id, (payload) => {
+            console.log('Invoice update:', payload);
+            // Update invoices state based on payload
+          });
+
+          // Cleanup subscriptions on unmount
+          return () => {
+            unsubscribeOrders();
+            unsubscribeInvoices();
+          };
+        }
+      } catch (error) {
+        console.error('Error setting up real-time subscriptions:', error);
+      }
+    };
+
+    setupRealtimeSubscriptions();
   }, []);
 
   const stats = [

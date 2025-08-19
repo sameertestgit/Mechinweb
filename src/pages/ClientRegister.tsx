@@ -10,8 +10,6 @@ const ClientRegister = () => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    phone: '',
-    company: '',
     password: '',
     confirmPassword: ''
   });
@@ -46,10 +44,6 @@ const ClientRegister = () => {
     if (!validateEmail(formData.email)) {
       newErrors.email = 'Please enter a valid email address';
     }
-
-    if (!validatePhone(formData.phone)) {
-      newErrors.phone = 'Please enter a valid phone number';
-    }
     
     const passwordValidation = validatePassword(formData.password);
     if (!passwordValidation.isValid) {
@@ -76,8 +70,6 @@ const ClientRegister = () => {
         options: {
           data: {
             name: formData.name,
-            phone: formData.phone,
-            company: formData.company,
           }
         }
       });
@@ -113,8 +105,6 @@ const ClientRegister = () => {
             id: user.id,
             name: formData.name,
             email: formData.email,
-            phone: formData.phone,
-            company: formData.company,
           }
         ]);
 
@@ -214,40 +204,6 @@ const ClientRegister = () => {
                     />
                   </div>
                   {errors.email && <p className="text-red-400 text-sm mt-1">{errors.email}</p>}
-                </div>
-
-                <div>
-                  <label htmlFor="phone" className="block text-sm font-medium text-gray-300 mb-2">
-                    Phone Number
-                  </label>
-                  <div className="relative">
-                    <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-                    <input
-                      type="tel"
-                      id="phone"
-                      name="phone"
-                      value={formData.phone}
-                      onChange={handleInputChange}
-                      className="w-full pl-10 pr-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all duration-300"
-                      placeholder="Enter your phone number"
-                    />
-                  </div>
-                  {errors.phone && <p className="text-red-400 text-sm mt-1">{errors.phone}</p>}
-                </div>
-
-                <div>
-                  <label htmlFor="company" className="block text-sm font-medium text-gray-300 mb-2">
-                    Company (Optional)
-                  </label>
-                  <input
-                    type="text"
-                    id="company"
-                    name="company"
-                    value={formData.company}
-                    onChange={handleInputChange}
-                    className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all duration-300"
-                    placeholder="Enter your company name"
-                  />
                 </div>
 
                 <div>
