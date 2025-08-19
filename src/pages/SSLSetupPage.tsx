@@ -40,6 +40,25 @@ const SSLSetupPage = () => {
     "Enable secure online transactions"
   ];
 
+  const faqs = [
+    {
+      question: "Do I need to purchase an SSL certificate separately?",
+      answer: "For paid SSL certificates, yes - you'll need to purchase the certificate from a Certificate Authority. We can help you choose the right certificate and handle the complete installation process. For free SSL certificates (Let's Encrypt), we handle everything including the certificate generation."
+    },
+    {
+      question: "What information do I need to provide?",
+      answer: "We'll need your domain name, hosting control panel access (cPanel/Plesk), and if you have a paid SSL certificate, the certificate files or purchase confirmation. We'll guide you through the entire process."
+    },
+    {
+      question: "How long does SSL installation take?",
+      answer: "Basic SSL installation typically takes 2-4 hours. Multi-domain setups may take longer depending on the number of domains and complexity of the configuration."
+    },
+    {
+      question: "Will my website have any downtime?",
+      answer: "SSL installation typically requires minimal downtime (5-10 minutes) for the final configuration. We schedule installations during low-traffic periods to minimize impact."
+    }
+  ];
+
   return (
     <div className="min-h-screen bg-gray-900 pt-20">
       {/* Hero Section */}
@@ -202,6 +221,31 @@ const SSLSetupPage = () => {
                   </div>
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* FAQs Section */}
+      <section className="py-20 bg-gray-800">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-4xl mx-auto">
+            <div className="text-center mb-16">
+              <h2 className="text-3xl sm:text-4xl font-bold text-white mb-6">
+                Frequently Asked <span className="bg-gradient-to-r from-green-400 to-blue-400 bg-clip-text text-transparent">Questions</span>
+              </h2>
+              <p className="text-xl text-gray-400">
+                Common questions about our SSL setup service
+              </p>
+            </div>
+
+            <div className="space-y-6">
+              {faqs.map((faq, index) => (
+                <div key={index} className="bg-gray-900 rounded-2xl p-6 border border-gray-700">
+                  <h3 className="text-lg font-bold text-white mb-3">{faq.question}</h3>
+                  <p className="text-gray-400 leading-relaxed">{faq.answer}</p>
+                </div>
+              ))}
             </div>
           </div>
         </div>
