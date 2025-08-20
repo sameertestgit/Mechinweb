@@ -16,27 +16,51 @@ import { getCurrentUser } from '../../lib/auth';
 
 const DashboardOverview = () => {
   const [isVisible, setIsVisible] = useState(false);
+  const [user, setUser] = useState(null);
   const [orders, setOrders] = useState([]);
   const [invoices, setInvoices] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     setIsVisible(true);
     
-    // Set up real-time subscriptions
-    const setupRealtimeSubscriptions = async () => {
+    // Load user data and set up real-time subscriptions
+    const initializeDashboard = async () => {
       try {
-        const user = await getCurrentUser();
-        if (user) {
+        const currentUser = await getCurrentUser();
+        if (currentUser) {
+          setUser(currentUser);
+          
+          // Load real orders and invoices from Supabase
+          const { data: ordersData } = await supabase
+            .from('orders')
+            .select('*')
+            .eq('client_id', currentUser.id)
+            .order('created_at', { ascending: false })
+            .limit(5);
+          
+          const { data: invoicesData } = await supabase
+            .from('invoices')
+            .select('*')
+            .eq('client_id', currentUser.id)
+            .order('created_at', { ascending: false })
+            .limit(5);
+          
+          setOrders(ordersData || []);
+          setInvoices(invoicesData || []);
+          
           // Subscribe to order updates
-          const unsubscribeOrders = RealtimeService.subscribeToOrders(user.id, (payload) => {
+          const unsubscribeOrders = RealtimeService.subscribeToOrders(currentUser.id, (payload) => {
             console.log('Order update:', payload);
-            // Update orders state based on payload
+            // Refresh orders data
+            loadOrders(currentUser.id);
           });
 
           // Subscribe to invoice updates
-          const unsubscribeInvoices = RealtimeService.subscribeToInvoices(user.id, (payload) => {
+          const unsubscribeInvoices = RealtimeService.subscribeToInvoices(currentUser.id, (payload) => {
             console.log('Invoice update:', payload);
-            // Update invoices state based on payload
+            // Refresh invoices data
+            loadInvoices(currentUser.id);
           });
 
           // Cleanup subscriptions on unmount
@@ -47,70 +71,78 @@ const DashboardOverview = () => {
         }
       } catch (error) {
         console.error('Error setting up real-time subscriptions:', error);
+      } finally {
+        setLoading(false);
       }
     };
 
-    setupRealtimeSubscriptions();
+    const loadOrders = async (userId: string) => {
+      const { data } = await supabase
+        .from('orders')
+        .select('*')
+        .eq('client_id', userId)
+        .order('created_at', { ascending: false })
+        .limit(5);
+      setOrders(data || []);
+    };
+
+    const loadInvoices = async (userId: string) => {
+      const { data } = await supabase
+        .from('invoices')
+        .select('*')
+        .eq('client_id', userId)
+        .order('created_at', { ascending: false })
+        .limit(5);
+      setInvoices(data || []);
+    };
+
+    initializeDashboard();
   }, []);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-cyan-500"></div>
+      </div>
+    );
+  }
 
   const stats = [
     {
       icon: Package,
       label: 'Active Orders',
-      value: '3',
-      change: '+2 this month',
+      value: orders.filter(o => o.status !== 'completed' && o.status !== 'cancelled').length.toString(),
+      change: `${orders.length} total`,
       color: 'from-blue-500 to-cyan-500',
       bgColor: 'bg-blue-500/10'
     },
     {
       icon: CreditCard,
       label: 'Total Spent',
-      value: '$1,247',
-      change: '+$299 this month',
+      value: `$${orders.filter(o => o.status === 'paid' || o.status === 'completed').reduce((sum, o) => sum + (o.amount_usd || 0), 0)}`,
+      change: 'lifetime',
       color: 'from-green-500 to-emerald-500',
       bgColor: 'bg-green-500/10'
     },
     {
       icon: FileText,
       label: 'Invoices',
-      value: '8',
-      change: '2 pending',
+      value: invoices.length.toString(),
+      change: `${invoices.filter(i => i.status !== 'paid').length} pending`,
       color: 'from-purple-500 to-pink-500',
       bgColor: 'bg-purple-500/10'
     },
     {
       icon: TrendingUp,
       label: 'Savings',
-      value: '$450',
-      change: 'vs market rate',
+      value: new Set(orders.map(o => o.service_id)).size.toString(),
+      change: 'different services',
       color: 'from-orange-500 to-red-500',
       bgColor: 'bg-orange-500/10'
     }
   ];
 
-  const recentOrders = [
-    {
-      id: 'ORD-001',
-      service: 'Email Migration & Setup',
-      status: 'completed',
-      date: '2024-01-15',
-      amount: 299
-    },
-    {
-      id: 'ORD-002',
-      service: 'SSL & HTTPS Setup',
-      status: 'in-progress',
-      date: '2024-01-20',
-      amount: 149
-    },
-    {
-      id: 'ORD-003',
-      service: 'Domain Security Setup',
-      status: 'pending',
-      date: '2024-01-22',
-      amount: 199
-    }
-  ];
+  const recentOrders = orders.slice(0, 3);
 
   const getStatusIcon = (status: string) => {
     switch (status) {

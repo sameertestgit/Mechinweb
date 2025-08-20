@@ -30,6 +30,7 @@ import OrdersPage from './pages/dashboard/OrdersPage';
 import InvoicesPage from './pages/dashboard/InvoicesPage';
 import ProfilePage from './pages/dashboard/ProfilePage';
 import AcronisSetupPage from './pages/AcronisSetupPage';
+import AIChat from './components/AIChat';
 
 function App() {
   const location = useLocation();
@@ -55,7 +56,6 @@ function App() {
             <Testimonials />
             <Blog />
             <Contact />
-            <FloatingCTA />
           </>
         } />
         <Route path="/services/email-migration" element={<EmailMigrationPage />} />
@@ -81,6 +81,8 @@ function App() {
         <Route path="/invoice/:id" element={<InvoiceView />} />
       </Routes>
       {!location.pathname.startsWith('/client/') && <Footer />}
+      <AIChat />
+      {!location.pathname.startsWith('/client/') && <FloatingCTA />}
     </div>
   );
 };

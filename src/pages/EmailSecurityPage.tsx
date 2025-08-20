@@ -37,6 +37,25 @@ const EmailSecurityPage = () => {
     "Enhanced email authentication"
   ];
 
+  const faqs = [
+    {
+      question: "What access do you need to set up email security?",
+      answer: "We need access to your domain's DNS management panel (where you manage DNS records) and your email platform admin panel. This allows us to configure SPF, DKIM, and DMARC records properly. We'll guide you through providing secure access."
+    },
+    {
+      question: "Do I need to purchase anything for email security setup?",
+      answer: "No additional purchases required. Email security setup uses DNS records and email platform configurations that are included with your existing services. We just need access to configure them properly."
+    },
+    {
+      question: "How long does email security setup take?",
+      answer: "Basic SPF, DKIM, and DMARC setup typically takes 2-4 hours. Advanced configurations with monitoring and reporting may take 1-2 business days depending on complexity."
+    },
+    {
+      question: "Will this affect my current email delivery?",
+      answer: "We implement email security gradually to avoid any delivery issues. We start with monitoring mode and gradually enforce policies to ensure smooth transition without affecting legitimate emails."
+    }
+  ];
+
   return (
     <div className="min-h-screen bg-gray-900 pt-20">
       {/* Hero Section */}
@@ -164,6 +183,31 @@ const EmailSecurityPage = () => {
                   </p>
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* FAQs Section */}
+      <section className="py-20 bg-gray-800">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-4xl mx-auto">
+            <div className="text-center mb-16">
+              <h2 className="text-3xl sm:text-4xl font-bold text-white mb-6">
+                Frequently Asked <span className="bg-gradient-to-r from-purple-400 to-cyan-400 bg-clip-text text-transparent">Questions</span>
+              </h2>
+              <p className="text-xl text-gray-400">
+                Common questions about our email security service
+              </p>
+            </div>
+
+            <div className="space-y-6">
+              {faqs.map((faq, index) => (
+                <div key={index} className="bg-gray-900 rounded-2xl p-6 border border-gray-700">
+                  <h3 className="text-lg font-bold text-white mb-3">{faq.question}</h3>
+                  <p className="text-gray-400 leading-relaxed">{faq.answer}</p>
+                </div>
+              ))}
             </div>
           </div>
         </div>

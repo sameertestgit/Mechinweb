@@ -57,6 +57,25 @@ const HostingSupportPage = () => {
     "Website migration and deployment"
   ];
 
+  const faqs = [
+    {
+      question: "What hosting control panel access do you need?",
+      answer: "We need temporary admin access to your hosting control panel (cPanel, Plesk, DirectAdmin, etc.). This includes the control panel URL, username, and password. We can work with temporary access or guide you through creating a temporary admin account for security."
+    },
+    {
+      question: "Do you work with all hosting providers?",
+      answer: "Yes, we work with all major hosting providers including shared hosting, VPS, dedicated servers, and cloud hosting. Whether you're using GoDaddy, Bluehost, SiteGround, or any other provider, we can help optimize your hosting environment."
+    },
+    {
+      question: "What if my website is currently down?",
+      answer: "We offer emergency support for website downtime. Contact us immediately and we'll prioritize your case. We typically respond to emergency situations within 15 minutes and can resolve most critical issues within 1-2 hours."
+    },
+    {
+      question: "Can you help with website migration between hosts?",
+      answer: "Absolutely! We handle complete website migrations including files, databases, email accounts, and DNS configuration. We ensure zero data loss and minimal downtime during the migration process."
+    }
+  ];
+
   return (
     <div className="min-h-screen bg-gray-900 pt-20">
       {/* Hero Section */}
@@ -230,6 +249,31 @@ const HostingSupportPage = () => {
                   </p>
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* FAQs Section */}
+      <section className="py-20 bg-gray-800">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-4xl mx-auto">
+            <div className="text-center mb-16">
+              <h2 className="text-3xl sm:text-4xl font-bold text-white mb-6">
+                Frequently Asked <span className="bg-gradient-to-r from-orange-400 to-red-400 bg-clip-text text-transparent">Questions</span>
+              </h2>
+              <p className="text-xl text-gray-400">
+                Common questions about our hosting support service
+              </p>
+            </div>
+
+            <div className="space-y-6">
+              {faqs.map((faq, index) => (
+                <div key={index} className="bg-gray-900 rounded-2xl p-6 border border-gray-700">
+                  <h3 className="text-lg font-bold text-white mb-3">{faq.question}</h3>
+                  <p className="text-gray-400 leading-relaxed">{faq.answer}</p>
+                </div>
+              ))}
             </div>
           </div>
         </div>

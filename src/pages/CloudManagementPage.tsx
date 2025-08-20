@@ -46,6 +46,25 @@ const CloudManagementPage = () => {
     }
   ];
 
+  const faqs = [
+    {
+      question: "What credentials do I need to provide for cloud management?",
+      answer: "You'll need to provide admin access to your Google Workspace or Microsoft 365 admin console. This includes admin username, password, and any necessary 2FA codes. We'll guide you through creating temporary admin access if needed for security."
+    },
+    {
+      question: "Do I need existing Google Workspace or Microsoft 365 accounts?",
+      answer: "Yes, you should have active Google Workspace or Microsoft 365 subscriptions. If you don't have these yet, we can help you choose the right plan and set up new accounts as part of our service."
+    },
+    {
+      question: "What's included in ongoing cloud management?",
+      answer: "Our management includes user provisioning, security configuration, app integrations, storage optimization, policy management, and ongoing support. We handle the technical aspects so you can focus on your business."
+    },
+    {
+      question: "Can you help migrate between Google Workspace and Microsoft 365?",
+      answer: "Absolutely! We specialize in migrations between cloud platforms. This service combines our cloud management expertise with our data migration capabilities for a seamless transition."
+    }
+  ];
+
   return (
     <div className="min-h-screen bg-gray-900 pt-20">
       {/* Hero Section */}
@@ -257,6 +276,31 @@ const CloudManagementPage = () => {
                   </div>
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* FAQs Section */}
+      <section className="py-20 bg-gray-800">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-4xl mx-auto">
+            <div className="text-center mb-16">
+              <h2 className="text-3xl sm:text-4xl font-bold text-white mb-6">
+                Frequently Asked <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">Questions</span>
+              </h2>
+              <p className="text-xl text-gray-400">
+                Common questions about our cloud management service
+              </p>
+            </div>
+
+            <div className="space-y-6">
+              {faqs.map((faq, index) => (
+                <div key={index} className="bg-gray-900 rounded-2xl p-6 border border-gray-700">
+                  <h3 className="text-lg font-bold text-white mb-3">{faq.question}</h3>
+                  <p className="text-gray-400 leading-relaxed">{faq.answer}</p>
+                </div>
+              ))}
             </div>
           </div>
         </div>

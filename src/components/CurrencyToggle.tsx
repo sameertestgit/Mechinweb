@@ -44,7 +44,7 @@ const CurrencyToggle: React.FC<CurrencyToggleProps> = ({
   const currentAmount = currency === 'USD' ? usdAmount : inrAmount;
 
   return (
-    <div className={`flex items-center space-x-4 ${className}`}>
+    <div className={`flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-4 ${className}`}>
       <div className="flex items-center space-x-2">
         <span className="text-gray-400 text-sm">Currency:</span>
         <div className="flex bg-gray-700 rounded-lg p-1">
@@ -73,7 +73,7 @@ const CurrencyToggle: React.FC<CurrencyToggleProps> = ({
       
       <div className="flex items-center space-x-2">
         <span className="text-2xl font-bold text-cyan-400">
-          {loading ? '...' : formatCurrency(currentAmount, currency)}
+          {loading ? '...' : (currency === 'USD' ? `$${currentAmount}` : `₹${currentAmount}`)}
         </span>
         {currency === 'INR' && !loading && (
           <span className="text-xs text-gray-400">

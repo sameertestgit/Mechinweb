@@ -17,61 +17,32 @@ const InvoicesPage = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [invoices, setInvoices] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     setIsVisible(true);
+    loadInvoices();
   }, []);
 
-  const invoices = [
-    {
-      id: 'INV-001',
-      number: 'INV-2024-001',
-      service: 'Email Migration & Setup',
-      date: '2024-01-15',
-      dueDate: '2024-02-15',
-      amount: 799,
-      tax: 79.90,
-      total: 878.90,
-      status: 'paid',
-      paidDate: '2024-01-16'
-    },
-    {
-      id: 'INV-002',
-      number: 'INV-2024-002',
-      service: 'SSL & HTTPS Setup',
-      date: '2024-01-20',
-      dueDate: '2024-02-20',
-      amount: 299,
-      tax: 29.90,
-      total: 328.90,
-      status: 'paid',
-      paidDate: '2024-01-21'
-    },
-    {
-      id: 'INV-003',
-      number: 'INV-2024-003',
-      service: 'Domain Security Setup',
-      date: '2024-01-22',
-      dueDate: '2024-02-15',
-      amount: 399,
-      tax: 39.90,
-      total: 438.90,
-      status: 'overdue',
-      paidDate: null
-    },
-    {
-      id: 'INV-004',
-      number: 'INV-2024-004',
-      service: 'Cloud Management - Monthly',
-      date: '2024-02-01',
-      dueDate: '2024-02-28',
-      amount: 299,
-      tax: 29.90,
-      total: 328.90,
-      status: 'pending',
-      paidDate: null
+  const loadInvoices = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data } = await supabase
+          .from('invoices')
+          .select('*')
+          .eq('client_id', user.id)
+          .order('created_at', { ascending: false });
+        
+        setInvoices(data || []);
+      }
+    } catch (error) {
+      console.error('Error loading invoices:', error);
+    } finally {
+      setLoading(false);
     }
-  ];
+  };
 
   const statusOptions = [
     { value: 'all', label: 'All Invoices', count: invoices.length },
@@ -107,15 +78,23 @@ const InvoicesPage = () => {
   };
 
   const filteredInvoices = invoices.filter(invoice => {
-    const matchesSearch = invoice.service.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         invoice.number.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch = (invoice.invoice_number || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         invoice.id.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = statusFilter === 'all' || invoice.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
 
-  const totalAmount = invoices.reduce((sum, invoice) => sum + invoice.total, 0);
-  const paidAmount = invoices.filter(i => i.status === 'paid').reduce((sum, invoice) => sum + invoice.total, 0);
-  const pendingAmount = invoices.filter(i => i.status !== 'paid').reduce((sum, invoice) => sum + invoice.total, 0);
+  const totalAmount = invoices.reduce((sum, invoice) => sum + (invoice.total_amount || 0), 0);
+  const paidAmount = invoices.filter(i => i.status === 'paid').reduce((sum, invoice) => sum + (invoice.total_amount || 0), 0);
+  const pendingAmount = invoices.filter(i => i.status !== 'paid').reduce((sum, invoice) => sum + (invoice.total_amount || 0), 0);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-cyan-500"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8">
@@ -229,23 +208,23 @@ const InvoicesPage = () => {
                   <tr key={invoice.id} className="hover:bg-gray-700/30 transition-colors">
                     <td className="px-6 py-4">
                       <div>
-                        <p className="text-white font-medium">{invoice.number}</p>
+                        <p className="text-white font-medium">{invoice.invoice_number}</p>
                         <p className="text-gray-400 text-sm">{invoice.id}</p>
                       </div>
                     </td>
-                    <td className="px-6 py-4 text-white">{invoice.service}</td>
-                    <td className="px-6 py-4 text-gray-300">{invoice.date}</td>
+                    <td className="px-6 py-4 text-white">Service Order</td>
+                    <td className="px-6 py-4 text-gray-300">{new Date(invoice.created_at).toLocaleDateString()}</td>
                     <td className="px-6 py-4">
                       <span className={`text-sm ${
-                        invoice.status === 'overdue' ? 'text-red-400' : 'text-gray-300'
+                        new Date(invoice.due_date) < new Date() && invoice.status !== 'paid' ? 'text-red-400' : 'text-gray-300'
                       }`}>
-                        {invoice.dueDate}
+                        {new Date(invoice.due_date).toLocaleDateString()}
                       </span>
                     </td>
                     <td className="px-6 py-4">
                       <div>
-                        <p className="text-white font-semibold">${invoice.total.toFixed(2)}</p>
-                        <p className="text-gray-400 text-sm">+${invoice.tax.toFixed(2)} tax</p>
+                        <p className="text-white font-semibold">${(invoice.total_amount || 0).toFixed(2)}</p>
+                        <p className="text-gray-400 text-sm">+${(invoice.tax_amount || 0).toFixed(2)} tax</p>
                       </div>
                     </td>
                     <td className="px-6 py-4">
@@ -255,8 +234,8 @@ const InvoicesPage = () => {
                           {invoice.status}
                         </span>
                       </div>
-                      {invoice.paidDate && (
-                        <p className="text-gray-400 text-xs mt-1">Paid: {invoice.paidDate}</p>
+                      {invoice.status === 'paid' && (
+                        <p className="text-gray-400 text-xs mt-1">Paid: {new Date(invoice.updated_at).toLocaleDateString()}</p>
                       )}
                     </td>
                     <td className="px-6 py-4">

@@ -58,8 +58,8 @@ const EmailMigrationPage = () => {
 
   const faqs = [
     {
-      question: "What credentials do I need to provide for email migration?",
-      answer: "You'll need to provide admin credentials for both your source and destination email platforms. This includes admin usernames, passwords, and any necessary API keys or app passwords. We ensure all credentials are handled securely and deleted after migration."
+      question: "What information and credentials do I need to provide?",
+      answer: "For email migration, you'll need to provide: 1) Admin credentials for your SOURCE email platform (current email system) 2) Admin credentials for your DESTINATION email platform (new email system) 3) List of all email accounts to be migrated 4) Any specific requirements or custom configurations. We handle all credentials securely and delete them after migration completion."
     },
     {
       question: "How long does the migration process take?",
@@ -71,7 +71,11 @@ const EmailMigrationPage = () => {
     },
     {
       question: "What email platforms do you support?",
-      answer: "We support all major email platforms including Gmail/Google Workspace, Microsoft 365/Exchange, Yahoo, Outlook.com, cPanel email, Plesk email, and most IMAP/POP3 providers."
+      answer: "We support all major email platforms including Gmail/Google Workspace, Microsoft 365/Exchange, Yahoo, Outlook.com, cPanel email, Plesk email, and most IMAP/POP3 providers. If you have a specific platform, contact us to confirm compatibility."
+    },
+    {
+      question: "Do I need to purchase anything before the migration?",
+      answer: "You should have your destination email platform (like Google Workspace or Microsoft 365) already set up and ready. We'll handle the technical migration process, but the target platform should be prepared in advance."
     }
   ];
 

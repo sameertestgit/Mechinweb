@@ -42,12 +42,12 @@ const SSLSetupPage = () => {
 
   const faqs = [
     {
-      question: "Do I need to purchase an SSL certificate separately?",
-      answer: "For paid SSL certificates, yes - you'll need to purchase the certificate from a Certificate Authority. We can help you choose the right certificate and handle the complete installation process. For free SSL certificates (Let's Encrypt), we handle everything including the certificate generation."
+      question: "What do I need to provide for SSL installation?",
+      answer: "Option 1: If you have a PAID SSL certificate - provide us the certificate files or purchase confirmation link, and we'll handle the installation. Option 2: For FREE SSL certificates (Let's Encrypt) - we handle everything including certificate generation. You'll need to provide hosting control panel access (cPanel/Plesk) in both cases."
     },
     {
-      question: "What information do I need to provide?",
-      answer: "We'll need your domain name, hosting control panel access (cPanel/Plesk), and if you have a paid SSL certificate, the certificate files or purchase confirmation. We'll guide you through the entire process."
+      question: "What hosting control panel access do you need?",
+      answer: "We need temporary admin access to your hosting control panel (cPanel, Plesk, or similar) to install and configure the SSL certificate. This includes username, password, and control panel URL. We'll guide you through creating temporary access if needed."
     },
     {
       question: "How long does SSL installation take?",
@@ -55,7 +55,7 @@ const SSLSetupPage = () => {
     },
     {
       question: "Will my website have any downtime?",
-      answer: "SSL installation typically requires minimal downtime (5-10 minutes) for the final configuration. We schedule installations during low-traffic periods to minimize impact."
+      answer: "SSL installation typically requires minimal downtime (5-10 minutes) for the final configuration. We schedule installations during low-traffic periods to minimize impact. We'll coordinate the timing with you in advance."
     }
   ];
 

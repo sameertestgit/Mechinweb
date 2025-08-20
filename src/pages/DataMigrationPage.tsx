@@ -58,6 +58,25 @@ const DataMigrationPage = () => {
     }
   ];
 
+  const faqs = [
+    {
+      question: "What access credentials do I need to provide?",
+      answer: "You'll need admin access to both SOURCE and DESTINATION platforms. For Microsoft: Office 365 admin credentials. For Google: Google Workspace admin access. We need read/write permissions to transfer data securely. All credentials are handled securely and deleted after migration."
+    },
+    {
+      question: "Do I need to set up the destination platform first?",
+      answer: "Yes, your destination platform (Google Workspace, Microsoft 365, etc.) should be set up and ready before migration. We can help you choose the right plan and configure the destination if needed as part of our service."
+    },
+    {
+      question: "What data can be migrated?",
+      answer: "We can migrate: Teams conversations and files, SharePoint document libraries, OneDrive files and folders, Google Drive files and sharing permissions, email data, calendar events, and contacts. We preserve folder structures and sharing permissions."
+    },
+    {
+      question: "How do you ensure data security during migration?",
+      answer: "We use enterprise-grade encryption, secure API connections, and follow strict data handling protocols. All data transfers are logged and verified. We provide detailed migration reports and maintain audit trails throughout the process."
+    }
+  ];
+
   return (
     <div className="min-h-screen bg-gray-900 pt-20">
       {/* Hero Section */}
@@ -239,6 +258,31 @@ const DataMigrationPage = () => {
                   </div>
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* FAQs Section */}
+      <section className="py-20 bg-gray-800">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-4xl mx-auto">
+            <div className="text-center mb-16">
+              <h2 className="text-3xl sm:text-4xl font-bold text-white mb-6">
+                Frequently Asked <span className="bg-gradient-to-r from-indigo-400 to-pink-400 bg-clip-text text-transparent">Questions</span>
+              </h2>
+              <p className="text-xl text-gray-400">
+                Common questions about our data migration service
+              </p>
+            </div>
+
+            <div className="space-y-6">
+              {faqs.map((faq, index) => (
+                <div key={index} className="bg-gray-900 rounded-2xl p-6 border border-gray-700">
+                  <h3 className="text-lg font-bold text-white mb-3">{faq.question}</h3>
+                  <p className="text-gray-400 leading-relaxed">{faq.answer}</p>
+                </div>
+              ))}
             </div>
           </div>
         </div>

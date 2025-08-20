@@ -18,65 +18,32 @@ const OrdersPage = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     setIsVisible(true);
+    loadOrders();
   }, []);
 
-  const orders = [
-    {
-      id: 'ORD-001',
-      service: 'Email Migration & Setup',
-      package: 'Standard',
-      status: 'completed',
-      date: '2024-01-15',
-      completedDate: '2024-01-18',
-      amount: 799,
-      progress: 100,
-      description: 'Migration from Gmail to Microsoft 365 for 25 users',
-      technician: 'John Smith',
-      estimatedCompletion: null
-    },
-    {
-      id: 'ORD-002',
-      service: 'SSL & HTTPS Setup',
-      package: 'Multi-Domain',
-      status: 'in-progress',
-      date: '2024-01-20',
-      completedDate: null,
-      amount: 299,
-      progress: 75,
-      description: 'SSL certificate installation for 3 domains',
-      technician: 'Sarah Johnson',
-      estimatedCompletion: '2024-01-25'
-    },
-    {
-      id: 'ORD-003',
-      service: 'Domain Security Setup',
-      package: 'Advanced',
-      status: 'pending',
-      date: '2024-01-22',
-      completedDate: null,
-      amount: 399,
-      progress: 0,
-      description: 'SPF, DKIM, DMARC configuration for email security',
-      technician: 'Mike Wilson',
-      estimatedCompletion: '2024-01-30'
-    },
-    {
-      id: 'ORD-004',
-      service: 'Cloud Data Migration',
-      package: 'Enterprise',
-      status: 'cancelled',
-      date: '2024-01-10',
-      completedDate: null,
-      amount: 1999,
-      progress: 0,
-      description: 'SharePoint to Google Drive migration',
-      technician: null,
-      estimatedCompletion: null
+  const loadOrders = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data } = await supabase
+          .from('orders')
+          .select('*')
+          .eq('client_id', user.id)
+          .order('created_at', { ascending: false });
+        
+        setOrders(data || []);
+      }
+    } catch (error) {
+      console.error('Error loading orders:', error);
+    } finally {
+      setLoading(false);
     }
-  ];
+  };
 
   const statusOptions = [
     { value: 'all', label: 'All Orders', count: orders.length },
@@ -117,11 +84,19 @@ const OrdersPage = () => {
   };
 
   const filteredOrders = orders.filter(order => {
-    const matchesSearch = order.service.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    const matchesSearch = (order.service_id || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
                          order.id.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = statusFilter === 'all' || order.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-cyan-500"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8">
@@ -186,8 +161,8 @@ const OrdersPage = () => {
               <div className="flex items-center space-x-4 mb-4 lg:mb-0">
                 {getStatusIcon(order.status)}
                 <div>
-                  <h3 className="text-xl font-bold text-white">{order.service}</h3>
-                  <p className="text-gray-400">{order.id} • {order.package} Package</p>
+                  <h3 className="text-xl font-bold text-white">{order.service_id || 'Service'}</h3>
+                  <p className="text-gray-400">{order.id} • {order.package_type} Package</p>
                 </div>
                 <span className={`px-3 py-1 rounded-full text-sm border ${getStatusColor(order.status)}`}>
                   {order.status.replace('-', ' ')}
@@ -196,7 +171,7 @@ const OrdersPage = () => {
               
               <div className="flex items-center space-x-4">
                 <div className="text-right">
-                  <p className="text-2xl font-bold text-white">${order.amount}</p>
+                  <p className="text-2xl font-bold text-white">${order.amount_usd || 0}</p>
                   <p className="text-gray-400 text-sm">Order Total</p>
                 </div>
               </div>
@@ -205,51 +180,25 @@ const OrdersPage = () => {
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
               <div>
                 <p className="text-gray-400 text-sm mb-1">Description</p>
-                <p className="text-white">{order.description}</p>
+                <p className="text-white">{order.service_id} - {order.package_type} package</p>
               </div>
               
               <div>
                 <p className="text-gray-400 text-sm mb-1">Order Date</p>
-                <p className="text-white">{order.date}</p>
-                {order.completedDate && (
+                <p className="text-white">{new Date(order.created_at).toLocaleDateString()}</p>
+                {order.status === 'completed' && (
                   <>
                     <p className="text-gray-400 text-sm mb-1 mt-2">Completed Date</p>
-                    <p className="text-green-400">{order.completedDate}</p>
+                    <p className="text-green-400">{new Date(order.updated_at).toLocaleDateString()}</p>
                   </>
                 )}
               </div>
               
               <div>
-                {order.technician && (
-                  <>
-                    <p className="text-gray-400 text-sm mb-1">Assigned Technician</p>
-                    <p className="text-white">{order.technician}</p>
-                  </>
-                )}
-                {order.estimatedCompletion && (
-                  <>
-                    <p className="text-gray-400 text-sm mb-1 mt-2">Est. Completion</p>
-                    <p className="text-cyan-400">{order.estimatedCompletion}</p>
-                  </>
-                )}
+                <p className="text-gray-400 text-sm mb-1">Status</p>
+                <p className="text-white capitalize">{order.status.replace('-', ' ')}</p>
               </div>
             </div>
-
-            {/* Progress Bar */}
-            {order.status === 'in-progress' && (
-              <div className="mb-6">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-gray-400 text-sm">Progress</span>
-                  <span className="text-white font-medium">{order.progress}%</span>
-                </div>
-                <div className="w-full bg-gray-700 rounded-full h-2">
-                  <div 
-                    className="bg-gradient-to-r from-cyan-500 to-purple-600 h-2 rounded-full transition-all duration-500"
-                    style={{ width: `${order.progress}%` }}
-                  ></div>
-                </div>
-              </div>
-            )}
 
             {/* Actions */}
             <div className="flex flex-wrap gap-3">
@@ -258,17 +207,17 @@ const OrdersPage = () => {
                 <span>View Details</span>
               </button>
               
-              {order.status !== 'cancelled' && order.technician && (
+              {order.status !== 'cancelled' && (
                 <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors inline-flex items-center space-x-2">
                   <MessageCircle className="w-4 h-4" />
-                  <span>Contact Technician</span>
+                  <span>Contact Support</span>
                 </button>
               )}
               
               {order.status === 'completed' && (
                 <button className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-colors inline-flex items-center space-x-2">
                   <Download className="w-4 h-4" />
-                  <span>Download Report</span>
+                  <span>Download Invoice</span>
                 </button>
               )}
               
