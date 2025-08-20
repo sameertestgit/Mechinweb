@@ -4,6 +4,7 @@ import { ArrowLeft, Mail, Lock, User, Phone, Eye, EyeOff } from 'lucide-react';
 import PasswordStrengthIndicator from '../components/PasswordStrengthIndicator';
 import { supabase } from '../lib/supabase';
 import { validateEmail, validatePassword, validatePhone } from '../utils/validation';
+import { EmailService } from '../lib/email';
 
 const ClientRegister = () => {
   const navigate = useNavigate();
@@ -70,7 +71,8 @@ const ClientRegister = () => {
         options: {
           data: {
             name: formData.name,
-          }
+          },
+          emailRedirectTo: `${window.location.origin}/client/login?verified=true`
         }
       });
 
@@ -105,6 +107,7 @@ const ClientRegister = () => {
             id: user.id,
             name: formData.name,
             email: formData.email,
+            email_verified: false
           }
         ]);
 
@@ -113,20 +116,20 @@ const ClientRegister = () => {
         // Don't show this error to user as auth was successful
       }
       
-      // Call the Netlify function to send the welcome email
+      // Send verification email using our email service
       try {
-        await fetch('/.netlify/functions/send-welcome-email', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name: formData.name, email: formData.email })
-        });
+        await EmailService.sendVerificationEmail(
+          formData.name,
+          formData.email,
+          `${window.location.origin}/client/login?verified=true`
+        );
       } catch (emailError) {
-        console.error('Failed to send welcome email:', emailError);
+        console.error('Failed to send verification email:', emailError);
       }
 
       // This is the common case when email confirmation is enabled.
       // It tells the user to check their email.
-      alert('Registration successful! Please check your email to confirm your account.');
+      alert('Registration successful! Please check your email to verify your account before logging in.');
       navigate('/client/login'); // Redirect to login page
       
     } catch (err) {

@@ -4,6 +4,7 @@ import { ArrowLeft, CreditCard, Lock, Calendar } from 'lucide-react';
 import { PaymentService } from '../lib/payments';
 import { PricingService } from '../lib/pricing';
 import CurrencyToggle from '../components/CurrencyToggle';
+import { ZohoService } from '../lib/zoho';
 
 const ServicePurchase = () => {
   const { serviceId } = useParams();
@@ -35,29 +36,39 @@ const ServicePurchase = () => {
         throw new Error('Invalid service or package');
       }
 
-      // Create payment intent
+      // Create Zoho invoice and order
       const paymentIntent = await PaymentService.createPaymentIntent(
         serviceId,
         selectedPackage,
-        currentPackage.price,
+        localizedPrice || currentPackage.price,
         selectedCurrency.toLowerCase()
       );
       
-      // Confirm payment
-      const success = await PaymentService.confirmPayment(paymentIntent.client_secret);
-      
-      if (success) {
-        // Process payment success
-        const result = await PaymentService.processPaymentSuccess(
-          paymentIntent.id,
-          serviceId,
-          selectedPackage,
-          currentPackage.price
-        );
+      // Redirect to Zoho payment page or show payment options
+      if (paymentIntent.payment_url) {
+        // Open Zoho payment page in new tab
+        window.open(paymentIntent.payment_url, '_blank');
         
-        navigate(`/payment-success?order=${result.orderId}&invoice=${result.invoiceId}`);
+        // Show payment pending message
+        alert('Please complete your payment in the opened tab. Once payment is confirmed, your order will be processed.');
+        navigate('/client/orders');
       } else {
-        alert('Payment failed. Please try again.');
+        // For demo purposes, simulate successful payment
+        const success = await PaymentService.confirmPayment(paymentIntent.invoice_id);
+      
+        if (success) {
+          // Process payment success
+          const result = await PaymentService.processPaymentSuccess(
+            paymentIntent.invoice_id,
+            serviceId,
+            selectedPackage,
+            localizedPrice || currentPackage.price
+          );
+        
+          navigate(`/payment-success?order=${result.orderId}&invoice=${result.invoiceId}`);
+        } else {
+          alert('Payment failed. Please try again.');
+        }
       }
     } catch (error) {
       console.error('Payment error:', error);

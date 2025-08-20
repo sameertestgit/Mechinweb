@@ -12,34 +12,69 @@ import {
   AlertCircle
 } from 'lucide-react';
 
+import { PaymentService } from '../../lib/payments';
+import { EncryptionService } from '../../lib/encryption';
 const PaymentsPage = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [showAddCard, setShowAddCard] = useState(false);
+  const [paymentMethods, setPaymentMethods] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [newCardData, setNewCardData] = useState({
+    cardNumber: '',
+    expiryDate: '',
+    cvc: '',
+    holderName: '',
+    isDefault: false
+  });
 
   useEffect(() => {
     setIsVisible(true);
+    loadPaymentMethods();
   }, []);
 
-  const paymentMethods = [
-    {
-      id: 1,
-      type: 'visa',
-      last4: '4242',
-      expiryMonth: 12,
-      expiryYear: 2025,
-      isDefault: true,
-      brand: 'Visa'
-    },
-    {
-      id: 2,
-      type: 'mastercard',
-      last4: '8888',
-      expiryMonth: 8,
-      expiryYear: 2026,
-      isDefault: false,
-      brand: 'Mastercard'
+  const loadPaymentMethods = async () => {
+    try {
+      const methods = await PaymentService.getPaymentMethods();
+      setPaymentMethods(methods);
+    } catch (error) {
+      console.error('Error loading payment methods:', error);
+    } finally {
+      setLoading(false);
     }
-  ];
+  };
+
+  const handleAddCard = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    try {
+      const [month, year] = newCardData.expiryDate.split('/');
+      
+      await PaymentService.storePaymentMethod({
+        type: 'card',
+        cardNumber: newCardData.cardNumber,
+        expiryMonth: parseInt(month),
+        expiryYear: parseInt('20' + year),
+        holderName: newCardData.holderName,
+        isDefault: newCardData.isDefault
+      });
+      
+      setNewCardData({
+        cardNumber: '',
+        expiryDate: '',
+        cvc: '',
+        holderName: '',
+        isDefault: false
+      });
+      
+      setShowAddCard(false);
+      await loadPaymentMethods();
+      
+      alert('Payment method added successfully!');
+    } catch (error) {
+      console.error('Error adding payment method:', error);
+      alert('Failed to add payment method. Please try again.');
+    }
+  };
 
   const pendingPayments = [
     {
@@ -174,15 +209,15 @@ const PaymentsPage = () => {
                 <div key={method.id} className="flex items-center justify-between p-4 bg-gray-700/30 rounded-xl hover:bg-gray-700/50 transition-colors">
                   <div className="flex items-center space-x-4">
                     <div className={`w-12 h-8 rounded flex items-center justify-center text-white text-xs font-bold ${
-                      method.type === 'visa' ? 'bg-blue-600' : 'bg-red-600'
+                      method.payment_method_type === 'card' ? 'bg-blue-600' : 'bg-gray-600'
                     }`}>
-                      {method.brand.toUpperCase()}
+                      CARD
                     </div>
                     <div>
-                      <p className="text-white font-medium">•••• •••• •••• {method.last4}</p>
-                      <p className="text-gray-400 text-sm">Expires {method.expiryMonth}/{method.expiryYear}</p>
+                      <p className="text-white font-medium">•••• •••• •••• {method.last_four}</p>
+                      <p className="text-gray-400 text-sm">Expires {method.expiry_month}/{method.expiry_year}</p>
                     </div>
-                    {method.isDefault && (
+                    {method.is_default && (
                       <span className="bg-green-500/20 text-green-400 px-2 py-1 rounded-full text-xs border border-green-500/30">
                         Default
                       </span>
@@ -204,12 +239,15 @@ const PaymentsPage = () => {
             {showAddCard && (
               <div className="mt-6 p-6 bg-gray-700/30 rounded-xl border border-gray-600">
                 <h3 className="text-lg font-bold text-white mb-4">Add New Payment Method</h3>
-                <form className="space-y-4">
+                <form onSubmit={handleAddCard} className="space-y-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-300 mb-2">Card Number</label>
                     <input
                       type="text"
+                      value={newCardData.cardNumber}
+                      onChange={(e) => setNewCardData({...newCardData, cardNumber: e.target.value})}
                       placeholder="1234 5678 9012 3456"
+                      maxLength={19}
                       className="w-full px-4 py-3 bg-gray-600 border border-gray-500 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-500"
                     />
                   </div>
@@ -218,7 +256,10 @@ const PaymentsPage = () => {
                       <label className="block text-sm font-medium text-gray-300 mb-2">Expiry Date</label>
                       <input
                         type="text"
+                        value={newCardData.expiryDate}
+                        onChange={(e) => setNewCardData({...newCardData, expiryDate: e.target.value})}
                         placeholder="MM/YY"
+                        maxLength={5}
                         className="w-full px-4 py-3 bg-gray-600 border border-gray-500 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-500"
                       />
                     </div>
@@ -226,7 +267,10 @@ const PaymentsPage = () => {
                       <label className="block text-sm font-medium text-gray-300 mb-2">CVC</label>
                       <input
                         type="text"
+                        value={newCardData.cvc}
+                        onChange={(e) => setNewCardData({...newCardData, cvc: e.target.value})}
                         placeholder="123"
+                        maxLength={4}
                         className="w-full px-4 py-3 bg-gray-600 border border-gray-500 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-500"
                       />
                     </div>
@@ -235,12 +279,20 @@ const PaymentsPage = () => {
                     <label className="block text-sm font-medium text-gray-300 mb-2">Cardholder Name</label>
                     <input
                       type="text"
+                      value={newCardData.holderName}
+                      onChange={(e) => setNewCardData({...newCardData, holderName: e.target.value})}
                       placeholder="John Doe"
                       className="w-full px-4 py-3 bg-gray-600 border border-gray-500 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-500"
                     />
                   </div>
                   <div className="flex items-center space-x-3">
-                    <input type="checkbox" id="default" className="rounded" />
+                    <input 
+                      type="checkbox" 
+                      id="default" 
+                      checked={newCardData.isDefault}
+                      onChange={(e) => setNewCardData({...newCardData, isDefault: e.target.checked})}
+                      className="rounded" 
+                    />
                     <label htmlFor="default" className="text-gray-300 text-sm">Set as default payment method</label>
                   </div>
                   <div className="flex space-x-3">

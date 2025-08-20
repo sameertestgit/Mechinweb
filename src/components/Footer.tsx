@@ -15,12 +15,12 @@ const Footer = () => {
   ];
 
   const quickLinks = [
-    { name: 'About Us', href: '/#about' },
-    { name: 'Services', href: '/#services' },
-    { name: 'Blog', href: '/#blog' },
-    { name: 'Contact', href: '/#contact' },
-    { name: 'Client Login', href: '/client/login' },
-    { name: 'Get Quote', href: '/#contact' }
+    { name: 'About Us', href: '/#about', isHash: true },
+    { name: 'Services', href: '/#services', isHash: true },
+    { name: 'Blog', href: '/#blog', isHash: true },
+    { name: 'Contact', href: '/#contact', isHash: true },
+    { name: 'Client Login', href: '/client/login', isHash: false },
+    { name: 'Get Quote', href: '/#contact', isHash: true }
   ];
 
   const handleNavClick = (href: string) => {
@@ -99,10 +99,10 @@ const Footer = () => {
             <ul className="space-y-2">
               {quickLinks.map((link, index) => (
                 <li key={index}>
-                  {link.href.startsWith('/#') ? (
+                  {link.isHash ? (
                     <button
                       onClick={() => handleNavClick(link.href)}
-                      className="text-gray-400 hover:text-cyan-400 transition-colors duration-200 text-sm"
+                      className="text-gray-400 hover:text-cyan-400 transition-colors duration-200 text-sm text-left"
                     >
                       {link.name}
                     </button>
@@ -139,13 +139,17 @@ const Footer = () => {
                   className="text-gray-400 hover:text-cyan-400 transition-colors duration-200 text-sm"
                 >
                   +1 (555) 123-4567
-                </a>
-              </div>
+            <div className="p-2 bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-600 rounded-xl shadow-lg">
+              <svg className="h-6 w-6 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                <path d="M2 17l10 5 10-5"/>
+                <path d="M2 12l10 5 10-5"/>
+              </svg>
               <div className="flex items-start space-x-3">
-                <MapPin className="h-4 w-4 text-cyan-400 mt-0.5" />
+            <div className="absolute -top-1 -right-1 w-3 h-3 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full animate-pulse"></div>
                 <span className="text-gray-400 text-sm">
                   123 Tech Street<br />
-                  Digital City, DC 12345
+            <span className="text-lg font-bold bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">
                 </span>
               </div>
             </div>

@@ -4,9 +4,12 @@ import { ArrowLeft, Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { getCurrentUser, redirectAfterLogin } from '../lib/auth';
 import { validateEmail } from '../utils/validation';
+import { EmailService } from '../lib/email';
 
 const ClientLogin = () => {
   const navigate = useNavigate();
+  const [searchParams] = new URLSearchParams(window.location.search);
+  const isVerified = searchParams.get('verified') === 'true';
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -15,6 +18,12 @@ const ClientLogin = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<{[key: string]: string}>({});
 
+  useEffect(() => {
+    if (isVerified) {
+      // Show success message for email verification
+      alert('Email verified successfully! You can now log in to your account.');
+    }
+  }, [isVerified]);
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData({
@@ -66,6 +75,32 @@ const ClientLogin = () => {
       }
 
       if (data.user) {
+        // Update email verification status if user just verified
+        if (isVerified) {
+          await supabase
+            .from('clients')
+            .update({
+              email_verified: true,
+              email_verified_at: new Date().toISOString()
+            })
+            .eq('id', data.user.id);
+
+          // Send welcome email after verification
+          try {
+            const { data: clientData } = await supabase
+              .from('clients')
+              .select('name')
+              .eq('id', data.user.id)
+              .single();
+
+            if (clientData) {
+              await EmailService.sendWelcomeEmail(clientData.name, formData.email);
+            }
+          } catch (emailError) {
+            console.error('Failed to send welcome email:', emailError);
+          }
+        }
+
         // Get user profile and redirect based on role
         const userProfile = await getCurrentUser();
         if (userProfile) {
