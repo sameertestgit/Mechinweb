@@ -16,7 +16,7 @@ import {
 } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { RealtimeService } from '../../lib/realtime';
-import RealtimeNotifications from './RealtimeNotifications';
+import RealtimeNotifications from '../RealtimeNotifications';
 
 const DashboardLayout = () => {
   const navigate = useNavigate();

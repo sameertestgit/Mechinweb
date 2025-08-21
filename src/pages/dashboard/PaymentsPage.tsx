@@ -76,42 +76,6 @@ const PaymentsPage = () => {
     }
   };
 
-  const pendingPayments = [
-    {
-      id: 'INV-003',
-      service: 'Domain Security Setup',
-      amount: 199,
-      dueDate: '2024-02-15',
-      status: 'overdue'
-    },
-    {
-      id: 'INV-004',
-      service: 'Cloud Management - Monthly',
-      amount: 299,
-      dueDate: '2024-02-28',
-      status: 'due-soon'
-    }
-  ];
-
-  const recentPayments = [
-    {
-      id: 'PAY-001',
-      service: 'Email Migration & Setup',
-      amount: 299,
-      date: '2024-01-15',
-      status: 'completed',
-      method: '•••• 4242'
-    },
-    {
-      id: 'PAY-002',
-      service: 'SSL & HTTPS Setup',
-      amount: 149,
-      date: '2024-01-20',
-      status: 'completed',
-      method: '•••• 8888'
-    }
-  ];
-
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'overdue':
@@ -151,28 +115,35 @@ const PaymentsPage = () => {
       </div>
 
       {/* Pending Payments Alert */}
-      {pendingPayments.length > 0 && (
+      {invoices.filter(inv => inv.status !== 'paid').length > 0 && (
         <div className={`bg-gradient-to-r from-red-500/10 to-orange-500/10 rounded-2xl p-6 border border-red-500/20 transition-all duration-1000 delay-200 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
           <div className="flex items-center space-x-3 mb-4">
             <AlertCircle className="w-6 h-6 text-red-400" />
             <h2 className="text-xl font-bold text-white">Pending Payments</h2>
           </div>
-          <p className="text-gray-400 mb-4">You have {pendingPayments.length} pending payment(s) that require attention.</p>
+          <p className="text-gray-400 mb-4">You have {invoices.filter(inv => inv.status !== 'paid').length} pending payment(s) that require attention.</p>
           <div className="space-y-3">
-            {pendingPayments.map((payment) => (
-              <div key={payment.id} className="flex items-center justify-between p-4 bg-gray-800/50 rounded-xl">
+            {invoices.filter(inv => inv.status !== 'paid').slice(0, 3).map((invoice) => (
+              <div key={invoice.id} className="flex items-center justify-between p-4 bg-gray-800/50 rounded-xl">
                 <div className="flex items-center space-x-4">
-                  {getStatusIcon(payment.status)}
+                  {getStatusIcon(invoice.status === 'overdue' ? 'overdue' : 'due-soon')}
                   <div>
-                    <p className="text-white font-medium">{payment.service}</p>
-                    <p className="text-gray-400 text-sm">{payment.id} • Due: {payment.dueDate}</p>
+                    <p className="text-white font-medium">{invoice.orders?.services?.name || 'Service'}</p>
+                    <p className="text-gray-400 text-sm">{invoice.invoice_number} • Due: {new Date(invoice.due_date).toLocaleDateString()}</p>
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="text-white font-semibold">${payment.amount}</p>
-                  <button className="bg-red-500 hover:bg-red-600 text-white px-4 py-1 rounded-lg text-sm font-medium transition-colors">
+                  <p className="text-white font-semibold">
+                    {invoice.currency === 'USD' ? '$' : '₹'}{(invoice.total_amount || 0).toFixed(2)}
+                  </p>
+                  <a
+                    href={`https://invoice.zoho.com/invoices/${invoice.id}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="bg-red-500 hover:bg-red-600 text-white px-4 py-1 rounded-lg text-sm font-medium transition-colors inline-block"
+                  >
                     Pay Now
-                  </button>
+                  </a>
                 </div>
               </div>
             ))}
@@ -203,14 +174,18 @@ const PaymentsPage = () => {
                   </div>
                   <div className="text-right">
                     <p className="text-white font-semibold">
-                    <a
-                      href={`https://invoice.zoho.com/invoices/${payment.id}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-1 rounded-lg text-sm font-medium transition-colors inline-block"
-                    >
+                      {order.currency === 'USD' ? '$' : '₹'}{(order.currency === 'USD' ? order.amount_usd : order.amount_inr)?.toFixed(2)}
                     </p>
-                    </a>
+                    {order.zoho_invoice_id && (
+                      <a
+                        href={`https://invoice.zoho.com/invoices/${order.zoho_invoice_id}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-1 rounded-lg text-sm font-medium transition-colors inline-block mt-1"
+                      >
+                        View Invoice
+                      </a>
+                    )}
                   </div>
                 </div>
               ))}
