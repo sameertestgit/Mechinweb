@@ -5,36 +5,46 @@ import { ArrowLeft, Download, Printer, Mail } from 'lucide-react';
 const InvoiceView = () => {
   const { invoiceId } = useParams();
   const [invoice, setInvoice] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Mock invoice data - in real app, fetch from API
-    const mockInvoice = {
-      id: invoiceId,
-      number: `INV-${invoiceId}`,
-      date: '2024-01-20',
-      dueDate: '2024-02-20',
-      status: 'Paid',
-      client: {
-        name: 'John Doe',
-        email: 'john@example.com',
-        company: 'Tech Solutions Inc.',
-        address: '123 Business St, Suite 100\nNew York, NY 10001'
-      },
-      service: {
-        name: 'Email Migration & Setup',
-        description: 'Professional email migration with zero downtime',
-        package: 'Standard Package',
-        quantity: 1,
-        price: 799
-      },
-      subtotal: 799,
-      tax: 79.90,
-      total: 878.90,
-      paymentMethod: 'Credit Card',
-      notes: 'Thank you for choosing Mechinweb for your IT services.'
+    const fetchInvoice = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+
+        const { data, error } = await supabase
+          .from('invoices')
+          .select(`
+            *,
+            orders (
+              *,
+              services (
+                name,
+                description,
+                category
+              )
+            ),
+            clients (
+              name,
+              email,
+              company
+            )
+          `)
+          .eq('id', invoiceId)
+          .eq('client_id', user.id)
+          .single();
+
+        if (error) throw error;
+        setInvoice(data);
+      } catch (error) {
+        console.error('Error fetching invoice:', error);
+      } finally {
+        setLoading(false);
+      }
     };
-    
-    setInvoice(mockInvoice);
+
+    fetchInvoice();
   }, [invoiceId]);
 
   const handlePrint = () => {
@@ -46,11 +56,29 @@ const InvoiceView = () => {
     alert('PDF download functionality would be implemented here');
   };
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-900 pt-20 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-cyan-500 mx-auto mb-4"></div>
+          <h1 className="text-2xl font-bold text-white mb-4">Loading Invoice...</h1>
+        </div>
+      </div>
+    );
+  }
+
   if (!invoice) {
     return (
       <div className="min-h-screen bg-gray-900 pt-20 flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-4xl font-bold text-white mb-4">Loading Invoice...</h1>
+          <h1 className="text-4xl font-bold text-white mb-4">Invoice Not Found</h1>
+          <p className="text-gray-400 mb-8">The requested invoice could not be found.</p>
+          <Link 
+            to="/client/dashboard"
+            className="inline-flex items-center space-x-2 px-6 py-3 bg-cyan-500 text-white rounded-lg hover:bg-cyan-600 transition-colors"
+          >
+            <span>Back to Dashboard</span>
+          </Link>
         </div>
       </div>
     );
@@ -102,7 +130,7 @@ const InvoiceView = () => {
                   </div>
                   <div className="text-right">
                     <h2 className="text-2xl font-bold text-gray-900">INVOICE</h2>
-                    <p className="text-gray-600">{invoice.number}</p>
+                    <p className="text-gray-600">{invoice.invoice_number}</p>
                   </div>
                 </div>
                 
@@ -118,10 +146,9 @@ const InvoiceView = () => {
                   <div>
                     <h3 className="text-lg font-semibold text-gray-900 mb-2">Bill To:</h3>
                     <div className="text-gray-600">
-                      <p className="font-semibold">{invoice.client.name}</p>
-                      {invoice.client.company && <p>{invoice.client.company}</p>}
-                      <p>{invoice.client.email}</p>
-                      <div className="whitespace-pre-line">{invoice.client.address}</div>
+                      <p className="font-semibold">{invoice.clients?.name}</p>
+                      {invoice.clients?.company && <p>{invoice.clients?.company}</p>}
+                      <p>{invoice.clients?.email}</p>
                     </div>
                   </div>
                 </div>
@@ -129,16 +156,16 @@ const InvoiceView = () => {
                 <div className="grid md:grid-cols-3 gap-8 mt-8">
                   <div>
                     <h3 className="text-sm font-semibold text-gray-900 mb-1">Invoice Date:</h3>
-                    <p className="text-gray-600">{new Date(invoice.date).toLocaleDateString()}</p>
+                    <p className="text-gray-600">{new Date(invoice.created_at).toLocaleDateString()}</p>
                   </div>
                   <div>
                     <h3 className="text-sm font-semibold text-gray-900 mb-1">Due Date:</h3>
-                    <p className="text-gray-600">{new Date(invoice.dueDate).toLocaleDateString()}</p>
+                    <p className="text-gray-600">{new Date(invoice.due_date).toLocaleDateString()}</p>
                   </div>
                   <div>
                     <h3 className="text-sm font-semibold text-gray-900 mb-1">Status:</h3>
                     <span className={`inline-block px-3 py-1 text-sm rounded-full ${
-                      invoice.status === 'Paid' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                      invoice.status === 'paid' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
                     }`}>
                       {invoice.status}
                     </span>
@@ -161,14 +188,18 @@ const InvoiceView = () => {
                     <tr className="border-b border-gray-100">
                       <td className="py-4">
                         <div>
-                          <p className="font-semibold text-gray-900">{invoice.service.name}</p>
-                          <p className="text-sm text-gray-600">{invoice.service.description}</p>
-                          <p className="text-sm text-gray-500">{invoice.service.package}</p>
+                          <p className="font-semibold text-gray-900">{invoice.orders?.services?.name}</p>
+                          <p className="text-sm text-gray-600">{invoice.orders?.services?.description}</p>
+                          <p className="text-sm text-gray-500">{invoice.orders?.package_type} Package</p>
                         </div>
                       </td>
-                      <td className="text-center py-4 text-gray-600">{invoice.service.quantity}</td>
-                      <td className="text-right py-4 text-gray-600">${invoice.service.price}</td>
-                      <td className="text-right py-4 text-gray-900 font-semibold">${invoice.service.price}</td>
+                      <td className="text-center py-4 text-gray-600">1</td>
+                      <td className="text-right py-4 text-gray-600">
+                        {invoice.currency === 'USD' ? '$' : '₹'}{(invoice.currency === 'USD' ? invoice.amount_usd : invoice.amount_inr)?.toFixed(2)}
+                      </td>
+                      <td className="text-right py-4 text-gray-900 font-semibold">
+                        {invoice.currency === 'USD' ? '$' : '₹'}{(invoice.currency === 'USD' ? invoice.amount_usd : invoice.amount_inr)?.toFixed(2)}
+                      </td>
                     </tr>
                   </tbody>
                 </table>
@@ -178,15 +209,21 @@ const InvoiceView = () => {
                   <div className="w-64">
                     <div className="flex justify-between py-2">
                       <span className="text-gray-600">Subtotal:</span>
-                      <span className="text-gray-900">${invoice.subtotal}</span>
+                      <span className="text-gray-900">
+                        {invoice.currency === 'USD' ? '$' : '₹'}{(invoice.currency === 'USD' ? invoice.amount_usd : invoice.amount_inr)?.toFixed(2)}
+                      </span>
                     </div>
                     <div className="flex justify-between py-2">
-                      <span className="text-gray-600">Tax (10%):</span>
-                      <span className="text-gray-900">${invoice.tax}</span>
+                      <span className="text-gray-600">Tax:</span>
+                      <span className="text-gray-900">
+                        {invoice.currency === 'USD' ? '$' : '₹'}{(invoice.tax_amount || 0).toFixed(2)}
+                      </span>
                     </div>
                     <div className="flex justify-between py-2 border-t border-gray-200 font-bold text-lg">
                       <span className="text-gray-900">Total:</span>
-                      <span className="text-gray-900">${invoice.total}</span>
+                      <span className="text-gray-900">
+                        {invoice.currency === 'USD' ? '$' : '₹'}{(invoice.total_amount || 0).toFixed(2)}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -194,17 +231,15 @@ const InvoiceView = () => {
                 {/* Payment Info */}
                 <div className="mt-8 p-4 bg-gray-50 rounded-lg">
                   <h3 className="text-sm font-semibold text-gray-900 mb-2">Payment Information:</h3>
-                  <p className="text-sm text-gray-600">Payment Method: {invoice.paymentMethod}</p>
+                  <p className="text-sm text-gray-600">Payment Method: Zoho Invoice</p>
                   <p className="text-sm text-gray-600">Status: {invoice.status}</p>
                 </div>
                 
                 {/* Notes */}
-                {invoice.notes && (
-                  <div className="mt-8">
-                    <h3 className="text-sm font-semibold text-gray-900 mb-2">Notes:</h3>
-                    <p className="text-sm text-gray-600">{invoice.notes}</p>
-                  </div>
-                )}
+                <div className="mt-8">
+                  <h3 className="text-sm font-semibold text-gray-900 mb-2">Notes:</h3>
+                  <p className="text-sm text-gray-600">Thank you for choosing Mechinweb for your IT services.</p>
+                </div>
               </div>
               
               {/* Footer */}
