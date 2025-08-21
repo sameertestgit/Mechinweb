@@ -175,7 +175,7 @@ const PaymentsPage = () => {
                   <div className="text-right">
                     <p className="text-white font-semibold">
                       {order.currency === 'USD' ? '$' : '₹'}{(order.currency === 'USD' ? order.amount_usd : order.amount_inr)?.toFixed(2)}
-                    </p>
+                    </a>
                     {order.zoho_invoice_id && (
                       <a
                         href={`https://invoice.zoho.com/invoices/${order.zoho_invoice_id}`}
