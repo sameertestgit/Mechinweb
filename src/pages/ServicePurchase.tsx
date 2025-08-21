@@ -137,7 +137,7 @@ const ServicePurchase = () => {
                         </div>
                       </div>
                       <ul className="space-y-2">
-                        {tier.features.map((feature, index) => (
+                        {pkg.features.map((feature, index) => (
                           <li key={index} className="flex items-center text-gray-300">
                             <div className="w-2 h-2 bg-cyan-500 rounded-full mr-3"></div>
                             {feature}
@@ -183,7 +183,7 @@ const ServicePurchase = () => {
                   <div className="space-y-4 mb-6">
                     <div className="flex items-center space-x-2 text-gray-400">
                       <Lock className="h-4 w-4" />
-                      <span className="text-sm">Secure payment powered by Stripe</span>
+                      <span className="text-sm">Secure payment powered by Zoho Invoice</span>
                     </div>
                     <div className="flex items-center space-x-2 text-gray-400">
                       <Calendar className="h-4 w-4" />

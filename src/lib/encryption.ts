@@ -1,170 +1,72 @@
-// Client-side encryption utilities for sensitive data
+// Secure data handling utilities for non-payment sensitive data
 import { supabase } from './supabase';
 
-// Simple encryption using Web Crypto API
-export class EncryptionService {
-  private static async generateKey(): Promise<CryptoKey> {
-    return await window.crypto.subtle.generateKey(
-      {
-        name: 'AES-GCM',
-        length: 256,
-      },
-      true,
-      ['encrypt', 'decrypt']
-    );
-  }
-
-  private static async getOrCreateUserKey(userId: string): Promise<CryptoKey> {
-    // In a real implementation, you'd derive this from user credentials
-    // For now, we'll use a deterministic approach based on user ID
+export class SecurityService {
+  // Hash sensitive non-payment data for secure storage
+  private static async hashData(data: string): Promise<string> {
     const encoder = new TextEncoder();
-    const data = encoder.encode(userId + 'mechinweb-encryption-salt');
-    const hashBuffer = await window.crypto.subtle.digest('SHA-256', data);
-    
-    return await window.crypto.subtle.importKey(
-      'raw',
-      hashBuffer,
-      { name: 'AES-GCM' },
-      false,
-      ['encrypt', 'decrypt']
-    );
+    const dataBuffer = encoder.encode(data);
+    const hashBuffer = await window.crypto.subtle.digest('SHA-256', dataBuffer);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
   }
 
-  static async encryptPaymentData(userId: string, paymentData: any): Promise<string> {
+  // Secure user profile data (non-payment)
+  static async secureUserData(userData: {
+    name: string;
+    email: string;
+    phone?: string;
+    company?: string;
+  }) {
     try {
-      const key = await this.getOrCreateUserKey(userId);
-      const encoder = new TextEncoder();
-      const data = encoder.encode(JSON.stringify(paymentData));
-      
-      const iv = window.crypto.getRandomValues(new Uint8Array(12));
-      const encrypted = await window.crypto.subtle.encrypt(
-        { name: 'AES-GCM', iv },
-        key,
-        data
-      );
-      
-      // Combine IV and encrypted data
-      const combined = new Uint8Array(iv.length + encrypted.byteLength);
-      combined.set(iv);
-      combined.set(new Uint8Array(encrypted), iv.length);
-      
-      // Convert to base64
-      return btoa(String.fromCharCode(...combined));
-    } catch (error) {
-      console.error('Encryption error:', error);
-      throw new Error('Failed to encrypt payment data');
-    }
-  }
-
-  static async decryptPaymentData(userId: string, encryptedData: string): Promise<any> {
-    try {
-      const key = await this.getOrCreateUserKey(userId);
-      
-      // Convert from base64
-      const combined = new Uint8Array(
-        atob(encryptedData).split('').map(char => char.charCodeAt(0))
-      );
-      
-      // Extract IV and encrypted data
-      const iv = combined.slice(0, 12);
-      const encrypted = combined.slice(12);
-      
-      const decrypted = await window.crypto.subtle.decrypt(
-        { name: 'AES-GCM', iv },
-        key,
-        encrypted
-      );
-      
-      const decoder = new TextDecoder();
-      const decryptedText = decoder.decode(decrypted);
-      
-      return JSON.parse(decryptedText);
-    } catch (error) {
-      console.error('Decryption error:', error);
-      throw new Error('Failed to decrypt payment data');
-    }
-  }
-
-  static async storeEncryptedPaymentMethod(paymentMethodData: {
-    type: string;
-    cardNumber?: string;
-    expiryMonth?: number;
-    expiryYear?: number;
-    holderName?: string;
-    isDefault?: boolean;
-  }): Promise<void> {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('User not authenticated');
-
-      // Extract non-sensitive data for display
-      const lastFour = paymentMethodData.cardNumber?.slice(-4) || '';
-      
-      // Encrypt sensitive data
-      const sensitiveData = {
-        cardNumber: paymentMethodData.cardNumber,
-        holderName: paymentMethodData.holderName
+      // Only hash phone if provided (for privacy)
+      const securedData = {
+        ...userData,
+        phone: userData.phone ? await this.hashData(userData.phone) : null
       };
-      
-      const encryptedData = await this.encryptPaymentData(user.id, sensitiveData);
-      
-      // Store in database
-      const { error } = await supabase
-        .from('encrypted_payment_data')
-        .insert([{
-          client_id: user.id,
-          encrypted_data: encryptedData,
-          payment_method_type: paymentMethodData.type,
-          last_four: lastFour,
-          expiry_month: paymentMethodData.expiryMonth,
-          expiry_year: paymentMethodData.expiryYear,
-          is_default: paymentMethodData.isDefault || false
-        }]);
 
-      if (error) throw error;
+      return securedData;
     } catch (error) {
-      console.error('Error storing payment method:', error);
+      console.error('Error securing user data:', error);
       throw error;
     }
   }
 
-  static async getDecryptedPaymentMethods(): Promise<any[]> {
+  // Validate data integrity
+  static async validateDataIntegrity(originalData: string, hashedData: string): Promise<boolean> {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('User not authenticated');
-
-      const { data: paymentMethods, error } = await supabase
-        .from('encrypted_payment_data')
-        .select('*')
-        .eq('client_id', user.id)
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-
-      // Decrypt sensitive data for each payment method
-      const decryptedMethods = await Promise.all(
-        (paymentMethods || []).map(async (method) => {
-          try {
-            const decryptedData = await this.decryptPaymentData(user.id, method.encrypted_data);
-            return {
-              ...method,
-              ...decryptedData
-            };
-          } catch (error) {
-            console.error('Error decrypting payment method:', error);
-            return {
-              ...method,
-              cardNumber: '****',
-              holderName: 'Encrypted'
-            };
-          }
-        })
-      );
-
-      return decryptedMethods;
+      const newHash = await this.hashData(originalData);
+      return newHash === hashedData;
     } catch (error) {
-      console.error('Error getting payment methods:', error);
+      console.error('Error validating data integrity:', error);
+      return false;
+    }
+  }
+
+  // Secure session management
+  static async createSecureSession(userId: string) {
+    try {
+      const sessionToken = window.crypto.getRandomValues(new Uint8Array(32));
+      const sessionId = Array.from(sessionToken, byte => byte.toString(16).padStart(2, '0')).join('');
+      
+      // Store session securely (example implementation)
+      sessionStorage.setItem('secure_session', sessionId);
+      
+      return sessionId;
+    } catch (error) {
+      console.error('Error creating secure session:', error);
       throw error;
+    }
+  }
+
+  // Clear sensitive data from memory
+  static clearSensitiveData() {
+    // Clear any temporary sensitive data from memory
+    sessionStorage.removeItem('secure_session');
+    
+    // Force garbage collection if available
+    if (window.gc) {
+      window.gc();
     }
   }
 }
