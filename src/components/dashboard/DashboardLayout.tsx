@@ -15,6 +15,8 @@ import {
   Search
 } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
+import { RealtimeService } from '../../lib/realtime';
+import RealtimeNotifications from './RealtimeNotifications';
 
 const DashboardLayout = () => {
   const navigate = useNavigate();
@@ -22,6 +24,7 @@ const DashboardLayout = () => {
   const [user, setUser] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [notifications, setNotifications] = useState(3);
+  const [realtimeConnected, setRealtimeConnected] = useState(false);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -31,12 +34,29 @@ const DashboardLayout = () => {
         return;
       }
       setUser(user);
+      
+      // Set up real-time connection status monitoring
+      const channel = supabase.channel('connection-status');
+      
+      channel.subscribe((status) => {
+        setRealtimeConnected(status === 'SUBSCRIBED');
+      });
+      
+      return () => {
+        channel.unsubscribe();
+      };
     };
 
     checkAuth();
+    
+    // Cleanup real-time subscriptions on unmount
+    return () => {
+      RealtimeService.unsubscribeAll();
+    };
   }, [navigate]);
 
   const handleLogout = async () => {
+    RealtimeService.unsubscribeAll();
     await supabase.auth.signOut();
     navigate('/');
   };
@@ -157,14 +177,16 @@ const DashboardLayout = () => {
             </div>
 
             <div className="flex items-center space-x-4">
-              <button className="relative p-2 text-gray-400 hover:text-white transition-colors">
-                <Bell className="w-5 h-5" />
-                {notifications > 0 && (
-                  <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center animate-pulse">
-                    {notifications}
-                  </span>
-                )}
-              </button>
+              <RealtimeNotifications />
+              
+              {/* Real-time connection indicator */}
+              <div className="flex items-center space-x-2">
+                <div className={`w-2 h-2 rounded-full ${realtimeConnected ? 'bg-green-500 animate-pulse' : 'bg-red-500'}`}></div>
+                <span className="text-xs text-gray-400 hidden sm:block">
+                  {realtimeConnected ? 'Live' : 'Offline'}
+                </span>
+              </div>
+              
               <div className="w-8 h-8 bg-gradient-to-r from-cyan-500 to-purple-600 rounded-full flex items-center justify-center">
                 <User className="w-4 h-4 text-white" />
               </div>

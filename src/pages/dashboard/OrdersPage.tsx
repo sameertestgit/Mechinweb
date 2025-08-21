@@ -13,6 +13,9 @@ import {
   Download
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { supabase } from '../../lib/supabase';
+import { RealtimeService } from '../../lib/realtime';
+import { getCurrentUser } from '../../lib/auth';
 
 const OrdersPage = () => {
   const [isVisible, setIsVisible] = useState(false);
@@ -23,20 +26,43 @@ const OrdersPage = () => {
 
   useEffect(() => {
     setIsVisible(true);
-    loadOrders();
+    initializeOrders();
   }, []);
 
-  const loadOrders = async () => {
+  const initializeOrders = async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
-        const { data } = await supabase
-          .from('orders')
-          .select('*')
-          .eq('client_id', user.id)
-          .order('created_at', { ascending: false });
+        await loadOrders(user.id);
         
-        setOrders(data || []);
+        // Set up real-time subscription
+        const unsubscribe = RealtimeService.subscribeToOrders(user.id, (payload) => {
+          loadOrders(user.id);
+          
+          // Show notification for status changes
+          if (payload.eventType === 'UPDATE' && payload.new.status !== payload.old?.status) {
+            const statusMessages = {
+              'paid': 'Payment confirmed! Your order is being processed.',
+              'completed': 'Service completed successfully!',
+              'cancelled': 'Order has been cancelled.',
+              'in-progress': 'Your order is now in progress!'
+            };
+            
+            const message = statusMessages[payload.new.status as keyof typeof statusMessages];
+            if (message) {
+              RealtimeService.showNotification(
+                'Order Status Update',
+                message,
+                payload.new.status === 'completed' ? 'success' : 'info'
+              );
+            }
+          }
+        });
+
+        // Cleanup on unmount
+        return () => {
+          unsubscribe();
+        };
       }
     } catch (error) {
       console.error('Error loading orders:', error);
@@ -45,10 +71,27 @@ const OrdersPage = () => {
     }
   };
 
+  const loadOrders = async (userId: string) => {
+    try {
+      const { data } = await supabase
+        .from('orders')
+        .select(`
+          *,
+          services (name, description)
+        `)
+        .eq('client_id', userId)
+        .order('created_at', { ascending: false });
+      
+      setOrders(data || []);
+    } catch (error) {
+      console.error('Error loading orders:', error);
+    }
+  };
+
   const statusOptions = [
     { value: 'all', label: 'All Orders', count: orders.length },
     { value: 'pending', label: 'Pending', count: orders.filter(o => o.status === 'pending').length },
-    { value: 'in-progress', label: 'In Progress', count: orders.filter(o => o.status === 'in-progress').length },
+    { value: 'paid', label: 'Paid', count: orders.filter(o => o.status === 'paid').length },
     { value: 'completed', label: 'Completed', count: orders.filter(o => o.status === 'completed').length },
     { value: 'cancelled', label: 'Cancelled', count: orders.filter(o => o.status === 'cancelled').length }
   ];
@@ -57,7 +100,7 @@ const OrdersPage = () => {
     switch (status) {
       case 'completed':
         return <CheckCircle className="w-5 h-5 text-green-500" />;
-      case 'in-progress':
+      case 'paid':
         return <Clock className="w-5 h-5 text-yellow-500" />;
       case 'pending':
         return <AlertCircle className="w-5 h-5 text-orange-500" />;
@@ -152,19 +195,19 @@ const OrdersPage = () => {
           </div>
         </div>
       </div>
-
+                  <p className="text-white font-semibold">${order.amount_usd || 0}</p>
       {/* Orders List */}
       <div className={`space-y-6 transition-all duration-1000 delay-400 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
         {filteredOrders.map((order) => (
           <div key={order.id} className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-6 border border-gray-700/50 hover:border-cyan-500/50 transition-all duration-300">
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-6">
               <div className="flex items-center space-x-4 mb-4 lg:mb-0">
-                {getStatusIcon(order.status)}
+                    {order.status !== 'cancelled' && order.status !== 'completed' && (
                 <div>
                   <h3 className="text-xl font-bold text-white">{order.service_id || 'Service'}</h3>
                   <p className="text-gray-400">{order.id} • {order.package_type} Package</p>
-                </div>
-                <span className={`px-3 py-1 rounded-full text-sm border ${getStatusColor(order.status)}`}>
+                    <p className="text-white font-medium">{order.services?.name || 'Service'}</p>
+                    <p className="text-gray-400 text-sm">{order.id.slice(0, 8)} • {new Date(order.created_at).toLocaleDateString()}</p>
                   {order.status.replace('-', ' ')}
                 </span>
               </div>
@@ -228,6 +271,21 @@ const OrdersPage = () => {
               )}
             </div>
           </div>
+          
+          {orders.length === 0 && (
+            <div className="text-center py-12">
+              <Package className="w-16 h-16 text-gray-600 mx-auto mb-4" />
+              <h3 className="text-xl font-bold text-white mb-2">No orders yet</h3>
+              <p className="text-gray-400 mb-6">Start by purchasing one of our professional services</p>
+              <Link
+                to="/client/services"
+                className="bg-gradient-to-r from-cyan-500 to-purple-600 text-white px-6 py-3 rounded-xl font-semibold hover:from-cyan-600 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 inline-flex items-center space-x-2"
+              >
+                <Package className="w-4 h-4" />
+                <span>Browse Services</span>
+              </Link>
+            </div>
+          )}
         ))}
       </div>
 

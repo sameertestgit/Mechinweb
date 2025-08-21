@@ -13,6 +13,7 @@ import {
 import { Link } from 'react-router-dom';
 import { RealtimeService } from '../../lib/realtime';
 import { getCurrentUser } from '../../lib/auth';
+import { supabase } from '../../lib/supabase';
 
 const DashboardOverview = () => {
   const [isVisible, setIsVisible] = useState(false);
@@ -20,6 +21,12 @@ const DashboardOverview = () => {
   const [orders, setOrders] = useState([]);
   const [invoices, setInvoices] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState({
+    activeOrders: 0,
+    totalSpent: 0,
+    totalInvoices: 0,
+    completedServices: 0
+  });
 
   useEffect(() => {
     setIsVisible(true);
@@ -31,42 +38,66 @@ const DashboardOverview = () => {
         if (currentUser) {
           setUser(currentUser);
           
-          // Load real orders and invoices from Supabase
-          const { data: ordersData } = await supabase
-            .from('orders')
-            .select('*')
-            .eq('client_id', currentUser.id)
-            .order('created_at', { ascending: false })
-            .limit(5);
-          
-          const { data: invoicesData } = await supabase
-            .from('invoices')
-            .select('*')
-            .eq('client_id', currentUser.id)
-            .order('created_at', { ascending: false })
-            .limit(5);
-          
-          setOrders(ordersData || []);
-          setInvoices(invoicesData || []);
+          // Load initial data
+          await loadOrders(currentUser.id);
+          await loadInvoices(currentUser.id);
+          updateStats(currentUser.id);
           
           // Subscribe to order updates
           const unsubscribeOrders = RealtimeService.subscribeToOrders(currentUser.id, (payload) => {
-            console.log('Order update:', payload);
-            // Refresh orders data
             loadOrders(currentUser.id);
+            updateStats(currentUser.id);
+            
+            // Show notification for status changes
+            if (payload.eventType === 'UPDATE' && payload.new.status !== payload.old?.status) {
+              const statusMessages = {
+                'paid': 'Payment confirmed! Your order is being processed.',
+                'completed': 'Service completed successfully!',
+                'cancelled': 'Order has been cancelled.'
+              };
+              
+              const message = statusMessages[payload.new.status as keyof typeof statusMessages];
+              if (message) {
+                RealtimeService.showNotification(
+                  'Order Update',
+                  message,
+                  payload.new.status === 'completed' ? 'success' : 'info'
+                );
+              }
+            }
           });
 
           // Subscribe to invoice updates
           const unsubscribeInvoices = RealtimeService.subscribeToInvoices(currentUser.id, (payload) => {
-            console.log('Invoice update:', payload);
-            // Refresh invoices data
             loadInvoices(currentUser.id);
+            updateStats(currentUser.id);
+            
+            // Show notification for new invoices
+            if (payload.eventType === 'INSERT') {
+              RealtimeService.showNotification(
+                'New Invoice',
+                'A new invoice has been generated for your order.',
+                'info'
+              );
+            }
+          });
+
+          // Subscribe to payment status changes
+          const unsubscribePayments = RealtimeService.subscribeToPaymentStatus(currentUser.id, (payload) => {
+            if (payload.new.status === 'paid') {
+              RealtimeService.showNotification(
+                'Payment Received',
+                'Your payment has been confirmed. Service will begin shortly.',
+                'success'
+              );
+            }
           });
 
           // Cleanup subscriptions on unmount
           return () => {
             unsubscribeOrders();
             unsubscribeInvoices();
+            unsubscribePayments();
           };
         }
       } catch (error) {
@@ -77,26 +108,73 @@ const DashboardOverview = () => {
     };
 
     const loadOrders = async (userId: string) => {
-      const { data } = await supabase
-        .from('orders')
-        .select('*')
-        .eq('client_id', userId)
-        .order('created_at', { ascending: false })
-        .limit(5);
-      setOrders(data || []);
+      try {
+        const { data } = await supabase
+          .from('orders')
+          .select(`
+            *,
+            services (name, description)
+          `)
+          .eq('client_id', userId)
+          .order('created_at', { ascending: false })
+          .limit(5);
+        setOrders(data || []);
+      } catch (error) {
+        console.error('Error loading orders:', error);
+      }
     };
 
     const loadInvoices = async (userId: string) => {
-      const { data } = await supabase
-        .from('invoices')
-        .select('*')
-        .eq('client_id', userId)
-        .order('created_at', { ascending: false })
-        .limit(5);
-      setInvoices(data || []);
+      try {
+        const { data } = await supabase
+          .from('invoices')
+          .select(`
+            *,
+            orders (
+              services (name, description)
+            )
+          `)
+          .eq('client_id', userId)
+          .order('created_at', { ascending: false })
+          .limit(5);
+        setInvoices(data || []);
+      } catch (error) {
+        console.error('Error loading invoices:', error);
+      }
+    };
+
+    const updateStats = async (userId: string) => {
+      try {
+        const { data: allOrders } = await supabase
+          .from('orders')
+          .select('*')
+          .eq('client_id', userId);
+
+        const { data: allInvoices } = await supabase
+          .from('invoices')
+          .select('*')
+          .eq('client_id', userId);
+
+        const ordersData = allOrders || [];
+        const invoicesData = allInvoices || [];
+
+        setStats({
+          activeOrders: ordersData.filter(o => o.status !== 'completed' && o.status !== 'cancelled').length,
+          totalSpent: ordersData.filter(o => o.status === 'paid' || o.status === 'completed').reduce((sum, o) => sum + (o.amount_usd || 0), 0),
+          totalInvoices: invoicesData.length,
+          completedServices: ordersData.filter(o => o.status === 'completed').length
+        });
+      } catch (error) {
+        console.error('Error updating stats:', error);
+      }
     };
 
     initializeDashboard();
+
+    // Cleanup on unmount
+    return () => {
+      RealtimeService.unsubscribeAll();
+    };
   }, []);
 
   if (loading) {
@@ -107,19 +185,19 @@ const DashboardOverview = () => {
     );
   }
 
-  const stats = [
+  const statsDisplay = [
     {
       icon: Package,
       label: 'Active Orders',
-      value: orders.filter(o => o.status !== 'completed' && o.status !== 'cancelled').length.toString(),
-      change: `${orders.length} total`,
+      value: stats.activeOrders.toString(),
+      change: `${orders.length} recent`,
       color: 'from-blue-500 to-cyan-500',
       bgColor: 'bg-blue-500/10'
     },
     {
       icon: CreditCard,
       label: 'Total Spent',
-      value: `$${orders.filter(o => o.status === 'paid' || o.status === 'completed').reduce((sum, o) => sum + (o.amount_usd || 0), 0)}`,
+      value: `$${stats.totalSpent}`,
       change: 'lifetime',
       color: 'from-green-500 to-emerald-500',
       bgColor: 'bg-green-500/10'
@@ -127,16 +205,16 @@ const DashboardOverview = () => {
     {
       icon: FileText,
       label: 'Invoices',
-      value: invoices.length.toString(),
+      value: stats.totalInvoices.toString(),
       change: `${invoices.filter(i => i.status !== 'paid').length} pending`,
       color: 'from-purple-500 to-pink-500',
       bgColor: 'bg-purple-500/10'
     },
     {
       icon: TrendingUp,
-      label: 'Savings',
-      value: new Set(orders.map(o => o.service_id)).size.toString(),
-      change: 'different services',
+      label: 'Completed',
+      value: stats.completedServices.toString(),
+      change: 'services done',
       color: 'from-orange-500 to-red-500',
       bgColor: 'bg-orange-500/10'
     }
@@ -195,7 +273,7 @@ const DashboardOverview = () => {
 
       {/* Stats Grid */}
       <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 transition-all duration-1000 delay-200 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-        {stats.map((stat, index) => {
+        {statsDisplay.map((stat, index) => {
           const IconComponent = stat.icon;
           return (
             <div key={index} className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-6 border border-gray-700/50 hover:border-cyan-500/50 transition-all duration-300 transform hover:-translate-y-1">
@@ -238,12 +316,12 @@ const DashboardOverview = () => {
                   <div className="flex items-center space-x-4">
                     {getStatusIcon(order.status)}
                     <div>
-                      <p className="text-white font-medium">{order.service}</p>
-                      <p className="text-gray-400 text-sm">{order.id} • {order.date}</p>
+                      <p className="text-white font-medium">{order.services?.name || 'Service'}</p>
+                      <p className="text-gray-400 text-sm">{order.id.slice(0, 8)} • {new Date(order.created_at).toLocaleDateString()}</p>
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className="text-white font-semibold">${order.amount}</p>
+                    <p className="text-white font-semibold">${order.amount_usd || 0}</p>
                     <span className={`text-xs px-2 py-1 rounded-full border ${getStatusColor(order.status)}`}>
                       {order.status.replace('-', ' ')}
                     </span>
@@ -251,6 +329,19 @@ const DashboardOverview = () => {
                 </div>
               ))}
             </div>
+            
+            {recentOrders.length === 0 && (
+              <div className="text-center py-8">
+                <Package className="w-12 h-12 text-gray-600 mx-auto mb-3" />
+                <p className="text-gray-400">No recent orders</p>
+                <Link
+                  to="/client/services"
+                  className="text-cyan-400 hover:text-cyan-300 text-sm font-medium mt-2 inline-block"
+                >
+                  Browse Services
+                </Link>
+              </div>
+            )}
           </div>
         </div>
 
@@ -271,7 +362,7 @@ const DashboardOverview = () => {
                 className="w-full flex items-center space-x-3 p-3 bg-gray-700/50 rounded-xl hover:bg-gray-700/70 transition-colors"
               >
                 <CreditCard className="w-5 h-5 text-gray-400" />
-                <span className="text-white font-medium">Make Payment</span>
+                <span className="text-white font-medium">View Payments</span>
               </Link>
               <Link
                 to="/client/invoices"
@@ -284,7 +375,8 @@ const DashboardOverview = () => {
           </div>
 
           {/* Support Card */}
-          <div className="bg-gradient-to-br from-green-500/10 to-emerald-500/10 rounded-2xl p-6 border border-green-500/20">
+          <div className="bg-gradient-to-br from-green-500/10 to-emerald-500/10 rounded-2xl p-6 border border-green-500/20 relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-20 h-20 bg-green-500/10 rounded-full -translate-y-10 translate-x-10"></div>
             <h3 className="text-lg font-bold text-white mb-2">Need Help?</h3>
             <p className="text-gray-400 text-sm mb-4">Our support team is here to help you 24/7</p>
             <div className="space-y-2">
@@ -303,6 +395,17 @@ const DashboardOverview = () => {
                 Contact Form
               </Link>
             </div>
+          </div>
+
+          {/* Real-time Status */}
+          <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-6 border border-gray-700/50">
+            <div className="flex items-center space-x-3 mb-4">
+              <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+              <h3 className="text-lg font-bold text-white">Live Updates</h3>
+            </div>
+            <p className="text-gray-400 text-sm">
+              Your dashboard updates automatically when orders or payments change status.
+            </p>
           </div>
         </div>
       </div>

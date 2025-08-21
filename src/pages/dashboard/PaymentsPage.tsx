@@ -10,6 +10,8 @@ import {
 } from 'lucide-react';
 
 import { PaymentService } from '../../lib/payments';
+import { RealtimeService } from '../../lib/realtime';
+import { supabase } from '../../lib/supabase';
 
 const PaymentsPage = () => {
   const [isVisible, setIsVisible] = useState(false);
@@ -19,10 +21,49 @@ const PaymentsPage = () => {
 
   useEffect(() => {
     setIsVisible(true);
-    loadPaymentData();
+    initializePaymentData();
   }, []);
 
-  const loadPaymentData = async () => {
+  const initializePaymentData = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        await loadPaymentData(user.id);
+        
+        // Set up real-time subscriptions
+        const unsubscribeOrders = RealtimeService.subscribeToOrders(user.id, () => {
+          loadPaymentData(user.id);
+        });
+
+        const unsubscribeInvoices = RealtimeService.subscribeToInvoices(user.id, () => {
+          loadPaymentData(user.id);
+        });
+
+        const unsubscribePayments = RealtimeService.subscribeToPaymentStatus(user.id, (payload) => {
+          if (payload.new.status === 'paid') {
+            RealtimeService.showNotification(
+              'Payment Received',
+              'Your payment has been confirmed successfully.',
+              'success'
+            );
+          }
+        });
+
+        // Cleanup on unmount
+        return () => {
+          unsubscribeOrders();
+          unsubscribeInvoices();
+          unsubscribePayments();
+        };
+      }
+    } catch (error) {
+      console.error('Error loading payment data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadPaymentData = async (userId: string) => {
     try {
       const [ordersData, invoicesData] = await Promise.all([
         PaymentService.getUserOrders(),
@@ -32,8 +73,6 @@ const PaymentsPage = () => {
       setInvoices(invoicesData);
     } catch (error) {
       console.error('Error loading payment data:', error);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -160,13 +199,18 @@ const PaymentsPage = () => {
                     </div>
                     <span className={`px-2 py-1 rounded-full text-xs border ${getStatusColor(order.status)}`}>
                       {order.status}
-                      </span>
+                    </span>
                   </div>
                   <div className="text-right">
                     <p className="text-white font-semibold">
-                      {order.currency === 'USD' ? '$' : '₹'}{order.currency === 'USD' ? order.amount_usd : order.amount_inr}
+                    <a
+                      href={`https://invoice.zoho.com/invoices/${payment.id}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-1 rounded-lg text-sm font-medium transition-colors inline-block"
+                    >
                     </p>
-                    <p className="text-gray-400 text-sm">{new Date(order.created_at).toLocaleDateString()}</p>
+                    </a>
                   </div>
                 </div>
               ))}
@@ -213,7 +257,7 @@ const PaymentsPage = () => {
               <h3 className="text-lg font-bold text-white">Zoho Secure Billing</h3>
             </div>
             <p className="text-gray-400 text-sm mb-4">
-              All payments are processed securely through Zoho Invoice. We don't store any payment card information.
+              All payments are processed securely through Zoho Invoice/Books. We never store payment card information.
             </p>
             <div className="space-y-2 text-sm">
               <div className="flex items-center space-x-2">
@@ -226,7 +270,7 @@ const PaymentsPage = () => {
               </div>
               <div className="flex items-center space-x-2">
                 <CheckCircle className="w-4 h-4 text-cyan-400" />
-                <span className="text-gray-300">SSL encrypted invoices</span>
+                <span className="text-gray-300">Real-time payment updates</span>
               </div>
             </div>
           </div>
@@ -258,9 +302,11 @@ const PaymentsPage = () => {
                       </div>
                     </td>
                     <td className="py-4 text-gray-300">{new Date(invoice.created_at).toLocaleDateString()}</td>
-                    <td className="py-4 text-gray-300">Zoho Invoice</td>
+                    <td className="py-4">
+                      <span className="text-cyan-400 text-sm">Zoho Invoice</span>
+                    </td>
                     <td className="py-4 text-white font-semibold">
-                      {invoice.currency === 'USD' ? '$' : '₹'}{invoice.total_amount}
+                      {invoice.currency === 'USD' ? '$' : '₹'}{(invoice.total_amount || 0).toFixed(2)}
                     </td>
                     <td className="py-4">
                       <span className={`px-3 py-1 rounded-full text-xs border ${getStatusColor(invoice.status)}`}>

@@ -12,6 +12,8 @@ import {
   AlertCircle
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { supabase } from '../../lib/supabase';
+import { RealtimeService } from '../../lib/realtime';
 
 const InvoicesPage = () => {
   const [isVisible, setIsVisible] = useState(false);
@@ -22,20 +24,44 @@ const InvoicesPage = () => {
 
   useEffect(() => {
     setIsVisible(true);
-    loadInvoices();
+    initializeInvoices();
   }, []);
 
-  const loadInvoices = async () => {
+  const initializeInvoices = async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
-        const { data } = await supabase
-          .from('invoices')
-          .select('*')
-          .eq('client_id', user.id)
-          .order('created_at', { ascending: false });
+        await loadInvoices(user.id);
         
-        setInvoices(data || []);
+        // Set up real-time subscription
+        const unsubscribe = RealtimeService.subscribeToInvoices(user.id, (payload) => {
+          loadInvoices(user.id);
+          
+          // Show notification for new invoices
+          if (payload.eventType === 'INSERT') {
+            RealtimeService.showNotification(
+              'New Invoice',
+              `Invoice ${payload.new.invoice_number} has been generated.`,
+              'info'
+            );
+          }
+          
+          // Show notification for payment updates
+          if (payload.eventType === 'UPDATE' && payload.new.status !== payload.old?.status) {
+            if (payload.new.status === 'paid') {
+              RealtimeService.showNotification(
+                'Payment Confirmed',
+                `Invoice ${payload.new.invoice_number} has been paid.`,
+                'success'
+              );
+            }
+          }
+        });
+
+        // Cleanup on unmount
+        return () => {
+          unsubscribe();
+        };
       }
     } catch (error) {
       console.error('Error loading invoices:', error);
@@ -44,10 +70,29 @@ const InvoicesPage = () => {
     }
   };
 
+  const loadInvoices = async (userId: string) => {
+    try {
+      const { data } = await supabase
+        .from('invoices')
+        .select(`
+          *,
+          orders (
+            services (name, description)
+          )
+        `)
+        .eq('client_id', userId)
+        .order('created_at', { ascending: false });
+      
+      setInvoices(data || []);
+    } catch (error) {
+      console.error('Error loading invoices:', error);
+    }
+  };
+
   const statusOptions = [
     { value: 'all', label: 'All Invoices', count: invoices.length },
     { value: 'paid', label: 'Paid', count: invoices.filter(i => i.status === 'paid').length },
-    { value: 'pending', label: 'Pending', count: invoices.filter(i => i.status === 'pending').length },
+    { value: 'sent', label: 'Sent', count: invoices.filter(i => i.status === 'sent').length },
     { value: 'overdue', label: 'Overdue', count: invoices.filter(i => i.status === 'overdue').length }
   ];
 
@@ -55,7 +100,7 @@ const InvoicesPage = () => {
     switch (status) {
       case 'paid':
         return <CheckCircle className="w-4 h-4 text-green-500" />;
-      case 'pending':
+      case 'sent':
         return <Clock className="w-4 h-4 text-yellow-500" />;
       case 'overdue':
         return <AlertCircle className="w-4 h-4 text-red-500" />;
@@ -68,7 +113,7 @@ const InvoicesPage = () => {
     switch (status) {
       case 'paid':
         return 'bg-green-500/20 text-green-400 border-green-500/30';
-      case 'pending':
+      case 'sent':
         return 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30';
       case 'overdue':
         return 'bg-red-500/20 text-red-400 border-red-500/30';
@@ -86,7 +131,7 @@ const InvoicesPage = () => {
 
   const totalAmount = invoices.reduce((sum, invoice) => sum + (invoice.total_amount || 0), 0);
   const paidAmount = invoices.filter(i => i.status === 'paid').reduce((sum, invoice) => sum + (invoice.total_amount || 0), 0);
-  const pendingAmount = invoices.filter(i => i.status !== 'paid').reduce((sum, invoice) => sum + (invoice.total_amount || 0), 0);
+  const outstandingAmount = invoices.filter(i => i.status !== 'paid').reduce((sum, invoice) => sum + (invoice.total_amount || 0), 0);
 
   if (loading) {
     return (
@@ -147,7 +192,7 @@ const InvoicesPage = () => {
             </div>
             <div>
               <p className="text-gray-400 text-sm">Outstanding</p>
-              <p className="text-2xl font-bold text-white">${pendingAmount.toFixed(2)}</p>
+              <p className="text-2xl font-bold text-white">${outstandingAmount.toFixed(2)}</p>
             </div>
           </div>
         </div>
@@ -209,10 +254,10 @@ const InvoicesPage = () => {
                     <td className="px-6 py-4">
                       <div>
                         <p className="text-white font-medium">{invoice.invoice_number}</p>
-                        <p className="text-gray-400 text-sm">{invoice.id}</p>
+                        <p className="text-gray-400 text-sm">{invoice.id.slice(0, 8)}</p>
                       </div>
                     </td>
-                    <td className="px-6 py-4 text-white">Service Order</td>
+                    <td className="px-6 py-4 text-white">{invoice.orders?.services?.name || 'Service'}</td>
                     <td className="px-6 py-4 text-gray-300">{new Date(invoice.created_at).toLocaleDateString()}</td>
                     <td className="px-6 py-4">
                       <span className={`text-sm ${
@@ -241,7 +286,7 @@ const InvoicesPage = () => {
                     <td className="px-6 py-4">
                       <div className="flex items-center space-x-2">
                         <Link
-                          to={`/client/invoice/${invoice.id}`}
+                          to={`/invoice/${invoice.id}`}
                           className="p-2 text-gray-400 hover:text-cyan-400 transition-colors"
                           title="View Invoice"
                         >
@@ -278,6 +323,13 @@ const InvoicesPage = () => {
               : 'You don\'t have any invoices yet'
             }
           </p>
+          <Link
+            to="/client/services"
+            className="bg-gradient-to-r from-cyan-500 to-purple-600 text-white px-6 py-3 rounded-xl font-semibold hover:from-cyan-600 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 inline-flex items-center space-x-2"
+          >
+            <FileText className="w-4 h-4" />
+            <span>Purchase Service</span>
+          </Link>
         </div>
       )}
     </div>
