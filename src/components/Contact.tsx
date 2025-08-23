@@ -80,13 +80,6 @@ const Contact = () => {
       content: "+1 (555) 123-4567",
       description: "Message us directly for instant support",
       action: "https://wa.me/15551234567"
-    },
-    {
-      icon: Phone,
-      title: "Call Us",
-      content: "+1 (555) 123-4567",
-      description: "Available Monday - Friday, 9 AM - 6 PM EST",
-      action: "tel:+15551234567"
     }
   ];
 

@@ -291,20 +291,12 @@ const HostingSupportPage = () => {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link 
-                to="/#quote"
+                to="/#contact"
                 className="bg-white text-orange-600 font-semibold px-8 py-4 rounded-full hover:bg-orange-50 transition-all duration-300 transform hover:scale-105 shadow-lg inline-flex items-center justify-center space-x-2"
               >
-                <span>Get Support Quote</span>
+                <span>Contact Us</span>
                 <ArrowRight className="h-5 w-5" />
               </Link>
-              <a
-                href="https://wa.me/15551234567?text=Hi%20Mechinweb,%20I%20need%20hosting%20support%20services."
-                target="_blank"
-                rel="noopener noreferrer"
-                className="border-2 border-white text-white font-semibold px-8 py-4 rounded-full hover:bg-white hover:text-orange-600 transition-all duration-300 transform hover:scale-105"
-              >
-                Emergency Support
-              </a>
             </div>
           </div>
         </div>

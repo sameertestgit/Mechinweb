@@ -231,19 +231,11 @@ const ServicesPage = () => {
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Link
-            to="/#quote"
+            to="/#contact"
             className="bg-gradient-to-r from-cyan-500 to-purple-600 text-white px-8 py-3 rounded-xl font-semibold hover:from-cyan-600 hover:to-purple-700 transition-all duration-300 transform hover:scale-105"
           >
             Request Custom Quote
           </Link>
-          <a
-            href="https://wa.me/15551234567"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="bg-gray-700 hover:bg-gray-600 text-white px-8 py-3 rounded-xl font-semibold transition-all duration-300"
-          >
-            Chat with Expert
-          </a>
         </div>
       </div>
     </div>

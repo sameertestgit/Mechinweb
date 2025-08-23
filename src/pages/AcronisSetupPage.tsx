@@ -252,20 +252,12 @@ const AcronisSetupPage = () => {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link 
-                to="/client/purchase/acronis-setup"
+                to="/#contact"
                 className="bg-white text-blue-600 font-semibold px-8 py-4 rounded-full hover:bg-blue-50 transition-all duration-300 transform hover:scale-105 shadow-lg inline-flex items-center justify-center space-x-2"
               >
-                <span>Purchase Setup</span>
+                <span>Contact Us</span>
                 <ArrowRight className="h-5 w-5" />
               </Link>
-              <a
-                href="https://wa.me/15551234567?text=Hi%20Mechinweb,%20I%27m%20interested%20in%20Acronis%20backup%20setup%20services."
-                target="_blank"
-                rel="noopener noreferrer"
-                className="border-2 border-white text-white font-semibold px-8 py-4 rounded-full hover:bg-white hover:text-blue-600 transition-all duration-300 transform hover:scale-105"
-              >
-                WhatsApp Chat
-              </a>
             </div>
           </div>
         </div>

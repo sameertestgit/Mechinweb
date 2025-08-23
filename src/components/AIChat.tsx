@@ -67,7 +67,7 @@ const AIChat: React.FC = () => {
     'hosting': "🖥️ Hosting support covers:\n• cPanel optimization\n• Plesk troubleshooting\n• Performance tuning\n• Security hardening\n• Emergency support\n\nStarting at $149. Having hosting issues?",
     'contact': "📞 You can reach our team at:\n• Email: contact@mechinweb.com\n• WhatsApp: Quick support\n• Contact form on our website\n\nWould you like me to help you get in touch with our experts?",
     'help': "🤖 I'm Mech, and I can help you with:\n• 💼 Service information and pricing\n• 🔧 Technical requirements\n• 👥 Connecting with our experts\n• 📊 Account assistance\n• 💡 Recommendations for your needs\n\nWhat would you like to explore?",
-    'quote': "📋 Ready for a quote? I can help you get started! Our team provides:\n• Free consultations\n• Detailed project estimates\n• Custom solution recommendations\n\nWould you like me to connect you with our quote form?",
+    'quote': "📋 Ready for a quote? I can help you get started! Our team provides:\n• Free consultations\n• Detailed project estimates\n• Custom solution recommendations\n\nWould you like me to connect you with our contact form?",
     'support': "🆘 Need support? We're here 24/7!\n• Emergency hosting issues\n• Technical troubleshooting\n• Service questions\n• Account assistance\n\nWhat kind of support do you need?",
     'default': "🤔 I understand you're asking about our IT services. For detailed assistance, I'd recommend contacting our team directly at contact@mechinweb.com or through our contact form. Is there anything specific I can help clarify? I'm here to make your experience smooth! ✨"
   };

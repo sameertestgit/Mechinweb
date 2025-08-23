@@ -122,17 +122,15 @@ const PaymentSuccess = () => {
               <div className="grid md:grid-cols-3 gap-6">
                 <div className="text-center">
                   <div className="p-4 bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl inline-block mb-4">
-                    <MessageCircle className="h-8 w-8 text-white" />
+                    <Mail className="h-8 w-8 text-white" />
                   </div>
-                  <h3 className="text-lg font-semibold text-white mb-2">WhatsApp Chat</h3>
-                  <p className="text-gray-400 mb-4">Get instant support via WhatsApp</p>
+                  <h3 className="text-lg font-semibold text-white mb-2">Email Support</h3>
+                  <p className="text-gray-400 mb-4">Get support via email</p>
                   <a
-                    href="https://wa.me/15551234567?text=Hi%20Mechinweb,%20I%20just%20completed%20a%20purchase%20and%20need%20assistance."
-                    target="_blank"
-                    rel="noopener noreferrer"
+                    href="mailto:contact@mechinweb.com"
                     className="bg-green-500 text-white px-6 py-2 rounded-lg font-semibold hover:bg-green-600 transition-all duration-300"
                   >
-                    Chat Now
+                    Email Now
                   </a>
                 </div>
                 
