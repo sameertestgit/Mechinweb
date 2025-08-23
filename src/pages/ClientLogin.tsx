@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import { supabase } from '../lib/supabase';
@@ -8,7 +9,7 @@ import { EmailService } from '../lib/email';
 
 const ClientLogin = () => {
   const navigate = useNavigate();
-  const [searchParams] = new URLSearchParams(window.location.search);
+  const searchParams = new URLSearchParams(window.location.search);
   const isVerified = searchParams.get('verified') === 'true';
   const [formData, setFormData] = useState({
     email: '',
