@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { MessageCircle, Send, X, Bot, User, Minimize2 } from 'lucide-react';
+import { MessageCircle, Send, X, Bot, User, Minimize2, Sparkles } from 'lucide-react';
 
 interface Message {
   id: string;
@@ -11,10 +11,11 @@ interface Message {
 const AIChat: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
+  const [hasAutoOpened, setHasAutoOpened] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
-      text: "Hi! I'm your Mechinweb assistant. How can I help you today?",
+      text: "Hi! I'm Mech, your Mechinweb assistant. How can I help you today? 🚀",
       sender: 'bot',
       timestamp: new Date()
     }
@@ -31,15 +32,44 @@ const AIChat: React.FC = () => {
     scrollToBottom();
   }, [messages]);
 
+  // Auto-open chatbot for new visitors
+  useEffect(() => {
+    const hasVisited = localStorage.getItem('mechinweb_visited');
+    if (!hasVisited && !hasAutoOpened) {
+      const timer = setTimeout(() => {
+        setIsOpen(true);
+        setHasAutoOpened(true);
+        localStorage.setItem('mechinweb_visited', 'true');
+        
+        // Add welcome message after auto-open
+        setTimeout(() => {
+          const welcomeMessage: Message = {
+            id: (Date.now() + 2).toString(),
+            text: "👋 Welcome to Mechinweb! I'm here to help you with any questions about our IT services. What can I assist you with today?",
+            sender: 'bot',
+            timestamp: new Date()
+          };
+          setMessages(prev => [...prev, welcomeMessage]);
+        }, 1000);
+      }, 3000); // Auto-open after 3 seconds
+
+      return () => clearTimeout(timer);
+    }
+  }, [hasAutoOpened]);
+
   const predefinedResponses = {
-    'hello': "Hello! Welcome to Mechinweb. I can help you with information about our IT services, pricing, or connect you with our team.",
-    'services': "We offer Email Migration, Domain Security, SSL Setup, Cloud Management, Data Migration, and Hosting Support. Which service interests you?",
-    'pricing': "Our services start from $149. Would you like specific pricing for any particular service?",
-    'email': "For email migration, we offer packages starting at $299. We handle Gmail, Outlook, and other platforms with zero downtime.",
-    'ssl': "SSL setup starts at $149 for single domain. We handle certificate installation, configuration, and auto-renewal.",
-    'contact': "You can reach us at contact@mechinweb.com or call +1 (555) 123-4567. Would you like me to connect you with our team?",
-    'help': "I can help you with:\n• Service information and pricing\n• Technical requirements\n• Connecting with our experts\n• Account assistance\n\nWhat would you like to know?",
-    'default': "I understand you're asking about our IT services. For detailed assistance, I'd recommend contacting our team directly at contact@mechinweb.com or through our contact form. Is there anything specific I can help clarify?"
+    'hello': "Hello! 👋 Welcome to Mechinweb. I'm Mech, and I can help you with information about our IT services, pricing, or connect you with our team. What interests you most?",
+    'services': "🛠️ We offer amazing IT services:\n• Email Migration & Setup ($299+)\n• Domain & Email Security ($199+)\n• SSL & HTTPS Setup ($149+)\n• Cloud Management ($399+)\n• Data Migration ($499+)\n• Hosting Support ($149+)\n• Acronis Backup Setup ($199+)\n\nWhich service catches your eye? 😊",
+    'pricing': "💰 Our services start from just $149! Here's a quick overview:\n• SSL Setup: $149-$499\n• Email Security: $199-$799\n• Email Migration: $299-$1499\n• Hosting Support: $149-$399\n\nWould you like detailed pricing for any specific service?",
+    'email': "📧 Email migration is our specialty! We offer:\n• Basic (10 accounts): $299\n• Standard (50 accounts): $799\n• Enterprise (unlimited): $1499\n\nWe handle Gmail, Outlook, and all major platforms with ZERO downtime! Want to know more?",
+    'ssl': "🔒 SSL setup starting at $149! We offer:\n• Single Domain: $149\n• Multi-Domain: $299\n• Wildcard SSL: $499\n\nIncludes installation, configuration, and auto-renewal setup. Need an SSL quote?",
+    'cloud': "☁️ Cloud services include:\n• Google Workspace management\n• Microsoft 365 administration\n• Data migration between platforms\n• User training and support\n\nPricing starts at $399. Which cloud platform are you using?",
+    'hosting': "🖥️ Hosting support covers:\n• cPanel optimization\n• Plesk troubleshooting\n• Performance tuning\n• Security hardening\n• Emergency support\n\nStarting at $149. Having hosting issues?",
+    'contact': "📞 You can reach our team at:\n• Email: contact@mechinweb.com\n• WhatsApp: Quick support\n• Contact form on our website\n\nWould you like me to help you get in touch with our experts?",
+    'help': "🤖 I'm Mech, and I can help you with:\n• 💼 Service information and pricing\n• 🔧 Technical requirements\n• 👥 Connecting with our experts\n• 📊 Account assistance\n• 💡 Recommendations for your needs\n\nWhat would you like to explore?",
+    'quote': "📋 Ready for a quote? I can help you get started! Our team provides:\n• Free consultations\n• Detailed project estimates\n• Custom solution recommendations\n\nWould you like me to connect you with our quote form?",
+    'support': "🆘 Need support? We're here 24/7!\n• Emergency hosting issues\n• Technical troubleshooting\n• Service questions\n• Account assistance\n\nWhat kind of support do you need?",
+    'default': "🤔 I understand you're asking about our IT services. For detailed assistance, I'd recommend contacting our team directly at contact@mechinweb.com or through our contact form. Is there anything specific I can help clarify? I'm here to make your experience smooth! ✨"
   };
 
   const getBotResponse = (userMessage: string): string => {
@@ -50,7 +80,11 @@ const AIChat: React.FC = () => {
     if (message.includes('price') || message.includes('cost')) return predefinedResponses.pricing;
     if (message.includes('email') || message.includes('migration')) return predefinedResponses.email;
     if (message.includes('ssl') || message.includes('certificate')) return predefinedResponses.ssl;
+    if (message.includes('cloud') || message.includes('workspace') || message.includes('365')) return predefinedResponses.cloud;
+    if (message.includes('hosting') || message.includes('cpanel') || message.includes('plesk')) return predefinedResponses.hosting;
     if (message.includes('contact') || message.includes('phone')) return predefinedResponses.contact;
+    if (message.includes('quote') || message.includes('estimate')) return predefinedResponses.quote;
+    if (message.includes('support') || message.includes('help')) return predefinedResponses.support;
     if (message.includes('help')) return predefinedResponses.help;
     
     return predefinedResponses.default;
@@ -115,8 +149,11 @@ const AIChat: React.FC = () => {
               <Bot className="w-5 h-5 text-white" />
             </div>
             <div>
-              <h3 className="text-white font-semibold">Mechinweb Assistant</h3>
-              <p className="text-cyan-100 text-xs">Online • Instant replies</p>
+              <h3 className="text-white font-semibold">Mech - AI Assistant</h3>
+              <p className="text-cyan-100 text-xs flex items-center">
+                <span className="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse"></span>
+                Online • Instant replies
+              </p>
             </div>
           </div>
           <div className="flex items-center space-x-2">
