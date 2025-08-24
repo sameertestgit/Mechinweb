@@ -88,7 +88,7 @@ const Testimonials = () => {
   }, []);
 
   return (
-    <section id="reviews" ref={sectionRef} className="py-20 bg-gradient-to-br from-blue-900 via-indigo-900 to-purple-900">
+    <section id="reviews" ref={sectionRef} className="py-20 bg-gradient-to-br from-blue-900 via-indigo-900 to-purple-900 scroll-mt-20">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="max-w-6xl mx-auto">
           {/* Header */}
