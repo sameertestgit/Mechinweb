@@ -70,7 +70,6 @@ function App() {
         <Route path="/client/*" element={<DashboardLayout />}>
           <Route path="dashboard" element={<DashboardOverview />} />
           <Route path="services" element={<ServicesPage />} />
-          <Route path="payments" element={<PaymentsPage />} />
           <Route path="orders" element={<OrdersPage />} />
           <Route path="invoices" element={<InvoicesPage />} />
           <Route path="profile" element={<ProfilePage />} />

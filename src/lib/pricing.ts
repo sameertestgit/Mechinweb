@@ -26,7 +26,7 @@ export const servicePricing: Record<string, ServicePricing> = {
     tiers: {
       basic: {
         name: 'Basic',
-        price: 299,
+        price: 15,
         features: [
           'Up to 10 email accounts',
           'Basic migration support',
@@ -36,7 +36,7 @@ export const servicePricing: Record<string, ServicePricing> = {
       },
       standard: {
         name: 'Standard',
-        price: 799,
+        price: 35,
         features: [
           'Up to 50 email accounts',
           'Priority migration support',
@@ -48,7 +48,7 @@ export const servicePricing: Record<string, ServicePricing> = {
       },
       enterprise: {
         name: 'Enterprise',
-        price: 1499,
+        price: 75,
         features: [
           'Unlimited email accounts',
           'Dedicated project manager',
@@ -66,7 +66,7 @@ export const servicePricing: Record<string, ServicePricing> = {
     tiers: {
       basic: {
         name: 'Basic Setup',
-        price: 199,
+        price: 15,
         features: [
           'SPF, DKIM, DMARC setup',
           'Basic DNS configuration',
@@ -76,7 +76,7 @@ export const servicePricing: Record<string, ServicePricing> = {
       },
       standard: {
         name: 'Advanced',
-        price: 399,
+        price: 35,
         features: [
           'Everything in Basic',
           'Security monitoring',
@@ -88,7 +88,7 @@ export const servicePricing: Record<string, ServicePricing> = {
       },
       enterprise: {
         name: 'Enterprise',
-        price: 799,
+        price: 65,
         features: [
           'Everything in Advanced',
           '24/7 monitoring',
@@ -106,7 +106,7 @@ export const servicePricing: Record<string, ServicePricing> = {
     tiers: {
       basic: {
         name: 'Single Domain',
-        price: 149,
+        price: 15,
         features: [
           'SSL certificate installation',
           'HTTPS configuration',
@@ -116,7 +116,7 @@ export const servicePricing: Record<string, ServicePricing> = {
       },
       standard: {
         name: 'Multi-Domain',
-        price: 299,
+        price: 35,
         features: [
           'Up to 5 domains',
           'Everything in Single Domain',
@@ -127,7 +127,7 @@ export const servicePricing: Record<string, ServicePricing> = {
       },
       enterprise: {
         name: 'Wildcard SSL',
-        price: 499,
+        price: 65,
         features: [
           'Unlimited subdomains',
           'Everything in Multi-Domain',
@@ -145,7 +145,7 @@ export const servicePricing: Record<string, ServicePricing> = {
     tiers: {
       basic: {
         name: 'Setup',
-        price: 399,
+        price: 25,
         features: [
           'Initial setup',
           'User configuration',
@@ -155,7 +155,7 @@ export const servicePricing: Record<string, ServicePricing> = {
       },
       standard: {
         name: 'Advanced',
-        price: 299,
+        price: 45,
         features: [
           'Monthly management',
           'Everything in Setup',
@@ -167,7 +167,7 @@ export const servicePricing: Record<string, ServicePricing> = {
       },
       enterprise: {
         name: 'Enterprise',
-        price: 599,
+        price: 85,
         features: [
           'Everything in Advanced',
           'Dedicated manager',
@@ -185,7 +185,7 @@ export const servicePricing: Record<string, ServicePricing> = {
     tiers: {
       basic: {
         name: 'Basic',
-        price: 499,
+        price: 25,
         features: [
           'Up to 100GB data',
           'Basic migration tools',
@@ -195,7 +195,7 @@ export const servicePricing: Record<string, ServicePricing> = {
       },
       standard: {
         name: 'Standard',
-        price: 999,
+        price: 55,
         features: [
           'Up to 1TB data',
           'Advanced migration tools',
@@ -207,7 +207,7 @@ export const servicePricing: Record<string, ServicePricing> = {
       },
       enterprise: {
         name: 'Enterprise',
-        price: 1999,
+        price: 95,
         features: [
           'Unlimited data',
           'Enterprise migration tools',
@@ -225,7 +225,7 @@ export const servicePricing: Record<string, ServicePricing> = {
     tiers: {
       basic: {
         name: 'Basic',
-        price: 149,
+        price: 15,
         features: [
           'Basic troubleshooting',
           'Performance optimization',
@@ -235,7 +235,7 @@ export const servicePricing: Record<string, ServicePricing> = {
       },
       standard: {
         name: 'Standard',
-        price: 199,
+        price: 25,
         features: [
           'Everything in Basic',
           'Priority support',
@@ -247,7 +247,7 @@ export const servicePricing: Record<string, ServicePricing> = {
       },
       enterprise: {
         name: 'Enterprise',
-        price: 399,
+        price: 55,
         features: [
           'Everything in Standard',
           '24/7 monitoring',
@@ -265,7 +265,7 @@ export const servicePricing: Record<string, ServicePricing> = {
     tiers: {
       basic: {
         name: 'Basic Setup',
-        price: 199,
+        price: 15,
         features: [
           'Acronis account creation',
           'Basic backup configuration',
@@ -275,7 +275,7 @@ export const servicePricing: Record<string, ServicePricing> = {
       },
       standard: {
         name: 'Advanced Setup',
-        price: 399,
+        price: 35,
         features: [
           'Everything in Basic',
           'Multiple device setup',
@@ -287,7 +287,7 @@ export const servicePricing: Record<string, ServicePricing> = {
       },
       enterprise: {
         name: 'Enterprise Setup',
-        price: 799,
+        price: 65,
         features: [
           'Everything in Advanced',
           'Custom backup policies',

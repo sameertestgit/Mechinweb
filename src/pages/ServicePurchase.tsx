@@ -36,39 +36,18 @@ const ServicePurchase = () => {
         throw new Error('Invalid service or package');
       }
 
-      // Create Zoho invoice and order
-      const paymentIntent = await PaymentService.createPaymentIntent(
-        serviceId,
-        selectedPackage,
-        localizedPrice || currentPackage.price,
-        selectedCurrency.toLowerCase()
+      // Show payment method selection
+      const paymentMethod = window.confirm(
+        'Choose your payment method:\n\nOK = Credit/Debit Card\nCancel = Bank Transfer\n\nNote: This is a demo. In production, this would integrate with Zoho Invoice for secure payment processing.'
       );
       
-      // Redirect to Zoho payment page or show payment options
-      if (paymentIntent.payment_url) {
-        // Open Zoho payment page in new tab
-        window.open(paymentIntent.payment_url, '_blank');
+      if (paymentMethod !== null) {
+        // Simulate payment processing
+        await new Promise(resolve => setTimeout(resolve, 2000));
         
-        // Show payment pending message
-        alert('Please complete your payment in the opened tab. Once payment is confirmed, your order will be processed.');
-        navigate('/client/orders');
-      } else {
         // For demo purposes, simulate successful payment
-        const success = await PaymentService.confirmPayment(paymentIntent.invoice_id);
-      
-        if (success) {
-          // Process payment success
-          const result = await PaymentService.processPaymentSuccess(
-            paymentIntent.invoice_id,
-            serviceId,
-            selectedPackage,
-            localizedPrice || currentPackage.price
-          );
-        
-          navigate(`/payment-success?order=${result.orderId}&invoice=${result.invoiceId}`);
-        } else {
-          alert('Payment failed. Please try again.');
-        }
+        alert(`Payment of ${selectedCurrency === 'USD' ? '$' : '₹'}${localizedPrice || currentPackage.price} processed successfully via ${paymentMethod ? 'Card' : 'Bank Transfer'}!`);
+        navigate('/payment-success');
       }
     } catch (error) {
       console.error('Payment error:', error);

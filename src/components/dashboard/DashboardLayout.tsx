@@ -64,7 +64,6 @@ const DashboardLayout = () => {
   const sidebarItems = [
     { icon: LayoutDashboard, label: 'Dashboard', path: '/client/dashboard', active: location.pathname === '/client/dashboard' },
     { icon: ShoppingCart, label: 'Purchase Services', path: '/client/services', active: location.pathname === '/client/services' },
-    { icon: CreditCard, label: 'Make Payments', path: '/client/payments', active: location.pathname === '/client/payments' },
     { icon: Package, label: 'My Orders', path: '/client/orders', active: location.pathname === '/client/orders' },
     { icon: FileText, label: 'Invoices', path: '/client/invoices', active: location.pathname === '/client/invoices' },
     { icon: User, label: 'Profile', path: '/client/profile', active: location.pathname === '/client/profile' },

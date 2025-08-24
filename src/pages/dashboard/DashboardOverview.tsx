@@ -358,19 +358,19 @@ const DashboardOverview = () => {
                 <span className="text-white font-medium">Purchase Service</span>
               </Link>
               <Link
-                to="/client/payments"
-                className="w-full flex items-center space-x-3 p-3 bg-gray-700/50 rounded-xl hover:bg-gray-700/70 transition-colors"
-              >
-                <CreditCard className="w-5 h-5 text-gray-400" />
-                <span className="text-white font-medium">View Payments</span>
-              </Link>
-              <Link
                 to="/client/invoices"
                 className="w-full flex items-center space-x-3 p-3 bg-gray-700/50 rounded-xl hover:bg-gray-700/70 transition-colors"
               >
                 <FileText className="w-5 h-5 text-gray-400" />
                 <span className="text-white font-medium">View Invoices</span>
               </Link>
+              <a
+                href="/#contact"
+                className="w-full flex items-center space-x-3 p-3 bg-gray-700/50 rounded-xl hover:bg-gray-700/70 transition-colors"
+              >
+                <CreditCard className="w-5 h-5 text-gray-400" />
+                <span className="text-white font-medium">Custom Quote</span>
+              </a>
             </div>
           </div>
 

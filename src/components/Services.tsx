@@ -150,10 +150,10 @@ const Services: React.FC = () => {
             </h3>
             <p className="text-gray-300 mb-6">
               We offer tailored IT solutions to meet your specific business requirements. 
-              Get in touch for a personalized consultation.
+              Contact us for a personalized consultation and custom pricing.
             </p>
             <Link
-              to="#contact"
+              to="/#contact"
               className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-cyan-500 to-purple-600 text-white font-semibold rounded-lg hover:from-cyan-600 hover:to-purple-700 transition-all duration-300 transform hover:scale-105"
             >
               Get Custom Quote
