@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { 
   User, 
   Mail, 
@@ -9,7 +10,6 @@ import {
   Save,
   Bell,
   Shield,
-  CreditCard,
   Globe,
   Eye,
   EyeOff
@@ -140,8 +140,7 @@ const ProfilePage = () => {
   const tabs = [
     { id: 'profile', label: 'Profile Information', icon: User },
     { id: 'security', label: 'Security', icon: Shield },
-    { id: 'notifications', label: 'Notifications', icon: Bell },
-    { id: 'billing', label: 'Billing', icon: CreditCard }
+    { id: 'notifications', label: 'Notifications', icon: Bell }
   ];
 
   return (
@@ -424,39 +423,6 @@ const ProfilePage = () => {
                       </label>
                     </div>
                   ))}
-                </div>
-              </div>
-            )}
-
-            {/* Billing Tab */}
-            {activeTab === 'billing' && (
-              <div>
-                <h2 className="text-2xl font-bold text-white mb-6">Billing Information</h2>
-                
-                <div className="space-y-6">
-                  <div className="bg-gray-700/30 rounded-xl p-6">
-                    <h3 className="text-lg font-bold text-white mb-4">Current Plan</h3>
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-white font-medium">Premium Client</p>
-                        <p className="text-gray-400 text-sm">Access to all services with priority support</p>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-2xl font-bold text-cyan-400">Free</p>
-                        <p className="text-gray-400 text-sm">Pay per service</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="bg-gray-700/30 rounded-xl p-6">
-                    <h3 className="text-lg font-bold text-white mb-4">Billing History</h3>
-                    <p className="text-gray-400">View your complete billing history in the <Link to="/client/invoices" className="text-cyan-400 hover:text-cyan-300">Invoices</Link> section.</p>
-                  </div>
-
-                  <div className="bg-gray-700/30 rounded-xl p-6">
-                    <h3 className="text-lg font-bold text-white mb-4">Payment Methods</h3>
-                    <p className="text-gray-400">Manage your payment methods in the <Link to="/client/payments" className="text-cyan-400 hover:text-cyan-300">Payments</Link> section.</p>
-                  </div>
                 </div>
               </div>
             )}
