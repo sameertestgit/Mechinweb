@@ -118,7 +118,7 @@ const ServicePurchase = () => {
               <div>
                 <h2 className="text-2xl font-bold text-white mb-6">Choose Your Package</h2>
                 <div className="space-y-4">
-                  {Object.entries(service.packages).map(([key, pkg]) => (
+                  {Object.entries(service.tiers).map(([key, pkg]) => (
                     <div
                       key={key}
                       className={`p-6 rounded-2xl border-2 cursor-pointer transition-all duration-300 ${
