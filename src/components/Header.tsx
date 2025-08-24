@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Menu, X, Search, User, LogOut } from 'lucide-react';
+import { Menu, X, User, LogOut } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [user, setUser] = useState<any>(null);
   const [isScrolled, setIsScrolled] = useState(false);
-  const navigate = useNavigate();
 
   useEffect(() => {
     // Check for user session
@@ -153,7 +152,7 @@ export default function Header() {
         {/* Mobile Menu */}
         {isMenuOpen && (
           <div className="md:hidden py-4 border-t border-gray-200 bg-white/95 backdrop-blur-md">
-            <div className="flex flex-col space-y-4">
+            <div className="hidden md:flex items-center space-x-6">
               <button
                 onClick={() => scrollToSection('home')}
                 className="text-left text-gray-700 hover:text-cyan-600 transition-colors py-2"
@@ -178,18 +177,6 @@ export default function Header() {
               >
                 Contact
               </button>
-              
-              {/* Mobile Search */}
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                <input
-                  type="text"
-                  placeholder="Search services..."
-                  className="w-full pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-sm"
-                />
-              </div>
-
-              {/* Mobile Auth Buttons */}
               <div className="pt-4 border-t border-gray-200">
                 {user ? (
                   <div className="flex flex-col space-y-3">

@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { CheckCircle, Download, MessageCircle, Calendar } from 'lucide-react';
+import { CheckCircle, Download, MessageCircle, Calendar, Mail } from 'lucide-react';
 
 const PaymentSuccess = () => {
   useEffect(() => {
