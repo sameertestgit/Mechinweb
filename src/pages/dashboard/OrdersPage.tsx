@@ -24,15 +24,27 @@ const OrdersPage = () => {
     loadOrders();
     
     // Set up real-time subscription
-    const { data: { user } } = supabase.auth.getUser().then(({ data }) => {
-      if (data.user) {
-        const unsubscribe = RealtimeService.subscribeToOrders(data.user.id, () => {
+    const setupRealtimeSubscription = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const unsubscribe = RealtimeService.subscribeToOrders(user.id, () => {
           loadOrders();
         });
         
-        return () => unsubscribe();
+        return unsubscribe;
       }
+    };
+    
+    let unsubscribe: (() => void) | undefined;
+    setupRealtimeSubscription().then((unsub) => {
+      unsubscribe = unsub;
     });
+    
+    return () => {
+      if (unsubscribe) {
+        unsubscribe();
+      }
+    };
   }, []);
 
   const loadOrders = async () => {
