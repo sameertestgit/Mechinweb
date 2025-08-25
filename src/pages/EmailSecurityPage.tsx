@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Shield, ArrowRight, CheckCircle, Clock, Mail, Users } from 'lucide-react';
+import { Shield, ArrowRight, CheckCircle, Clock, Mail, Users, Home } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const EmailSecurityPage = () => {
@@ -81,6 +81,17 @@ const EmailSecurityPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-900 pt-20">
+      {/* Back to Home */}
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <Link 
+          to="/"
+          className="inline-flex items-center space-x-2 text-cyan-400 hover:text-cyan-300 transition-colors duration-300"
+        >
+          <Home className="h-5 w-5" />
+          <span>Back to Home</span>
+        </Link>
+      </div>
+
       {/* Hero Section */}
       <section className="py-20 bg-gradient-to-br from-cyan-900 via-blue-900 to-purple-900 relative overflow-hidden">
         <div className="absolute inset-0">

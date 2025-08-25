@@ -41,11 +41,26 @@ export default function Header() {
   };
 
   const scrollToSection = (sectionId: string) => {
-    const element = document.getElementById(sectionId);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-      setIsMenuOpen(false);
-      setIsServicesOpen(false);
+    // Close menus first
+    setIsMenuOpen(false);
+    setIsServicesOpen(false);
+    
+    // If we're not on the home page, navigate there first
+    if (window.location.pathname !== '/') {
+      navigate('/', { replace: true });
+      // Wait for navigation to complete, then scroll
+      setTimeout(() => {
+        const element = document.getElementById(sectionId);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 100);
+    } else {
+      // We're already on home page, just scroll
+      const element = document.getElementById(sectionId);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+      }
     }
   };
 

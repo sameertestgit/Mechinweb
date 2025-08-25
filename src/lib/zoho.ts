@@ -1,4 +1,4 @@
-// Zoho Invoice/Books integration
+// Enhanced Zoho Invoice/Books integration with real-time updates
 import { supabase } from './supabase';
 
 export interface ZohoCustomer {
@@ -17,6 +17,7 @@ export interface ZohoInvoice {
   status: string;
   date: string;
   due_date: string;
+  payment_url?: string;
 }
 
 export interface ZohoPayment {
@@ -27,26 +28,39 @@ export interface ZohoPayment {
   payment_mode: string;
 }
 
+export interface ZohoServiceItem {
+  serviceId: string;
+  serviceName: string;
+  packageType: string;
+  quantity: number;
+  unitPrice: number;
+  totalPrice: number;
+  addOns: Array<{
+    id: string;
+    name: string;
+    price: number;
+  }>;
+}
+
 export class ZohoService {
-  private static async getAccessToken(): Promise<string> {
+  private static async callZohoFunction(endpoint: string, data?: any): Promise<any> {
     try {
-      // In production, this would be handled by an edge function
-      // For now, we'll simulate the token retrieval
-      const response = await fetch('/api/zoho/token', {
-        method: 'POST',
+      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/zoho-integration${endpoint}`, {
+        method: data ? 'POST' : 'GET',
         headers: {
+          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
           'Content-Type': 'application/json'
-        }
+        },
+        body: data ? JSON.stringify(data) : undefined
       });
 
       if (!response.ok) {
-        throw new Error('Failed to get Zoho access token');
+        throw new Error(`Zoho API call failed: ${response.statusText}`);
       }
 
-      const data = await response.json();
-      return data.access_token;
+      return await response.json();
     } catch (error) {
-      console.error('Error getting Zoho access token:', error);
+      console.error('Error calling Zoho function:', error);
       throw error;
     }
   }
@@ -57,51 +71,16 @@ export class ZohoService {
     phone?: string;
     company?: string;
   }): Promise<ZohoCustomer> {
-    try {
-      const response = await fetch('/api/zoho/customers', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(customerData)
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to create Zoho customer');
-      }
-
-      return await response.json();
-    } catch (error) {
-      console.error('Error creating Zoho customer:', error);
-      throw error;
-    }
+    return await this.callZohoFunction('/customers', customerData);
   }
 
   static async createInvoice(invoiceData: {
     customerId: string;
-    serviceId: string;
-    packageType: string;
-    amount: number;
+    serviceItems: ZohoServiceItem[];
     currency: string;
+    notes?: string;
   }): Promise<ZohoInvoice> {
-    try {
-      const response = await fetch('/api/zoho/invoices', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(invoiceData)
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to create Zoho invoice');
-      }
-
-      return await response.json();
-    } catch (error) {
-      console.error('Error creating Zoho invoice:', error);
-      throw error;
-    }
+    return await this.callZohoFunction('/invoices', invoiceData);
   }
 
   static async recordPayment(paymentData: {
@@ -110,53 +89,144 @@ export class ZohoService {
     paymentMode: string;
     reference?: string;
   }): Promise<ZohoPayment> {
-    try {
-      const response = await fetch('/api/zoho/payments', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(paymentData)
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to record Zoho payment');
-      }
-
-      return await response.json();
-    } catch (error) {
-      console.error('Error recording Zoho payment:', error);
-      throw error;
-    }
+    return await this.callZohoFunction('/payments', paymentData);
   }
 
   static async getInvoiceDetails(invoiceId: string): Promise<ZohoInvoice> {
+    return await this.callZohoFunction(`/invoices/${invoiceId}`);
+  }
+
+  static async getInvoiceStatus(invoiceId: string): Promise<{ status: string; payment_date?: string }> {
+    const invoice = await this.getInvoiceDetails(invoiceId);
+    return {
+      status: invoice.status,
+      payment_date: invoice.status === 'paid' ? new Date().toISOString() : undefined
+    };
+  }
+
+  static async getCustomerInvoices(customerId: string): Promise<ZohoInvoice[]> {
+    return await this.callZohoFunction(`/customers/${customerId}/invoices`);
+  }
+
+  // Real-time integration methods
+  static async syncOrderStatus(orderId: string): Promise<void> {
     try {
-      const response = await fetch(`/api/zoho/invoices/${invoiceId}`);
+      const { data: order } = await supabase
+        .from('orders')
+        .select('zoho_invoice_id')
+        .eq('id', orderId)
+        .single();
 
-      if (!response.ok) {
-        throw new Error('Failed to get invoice details');
+      if (order?.zoho_invoice_id) {
+        const invoiceStatus = await this.getInvoiceStatus(order.zoho_invoice_id);
+        
+        // Update order status in real-time
+        await supabase
+          .from('orders')
+          .update({
+            status: invoiceStatus.status === 'paid' ? 'paid' : 'pending',
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', orderId);
       }
-
-      return await response.json();
     } catch (error) {
-      console.error('Error getting invoice details:', error);
+      console.error('Error syncing order status:', error);
+    }
+  }
+
+  static async createInvoiceFromOrder(
+    orderId: string,
+    serviceItems: ZohoServiceItem[],
+    currency: string
+  ): Promise<ZohoInvoice> {
+    try {
+      // Get order and client data
+      const { data: order } = await supabase
+        .from('orders')
+        .select(`
+          *,
+          clients (name, email, phone, company)
+        `)
+        .eq('id', orderId)
+        .single();
+
+      if (!order) throw new Error('Order not found');
+
+      // Create or get customer in Zoho
+      const customer = await this.createCustomer({
+        name: order.clients.name,
+        email: order.clients.email,
+        phone: order.clients.phone,
+        company: order.clients.company
+      });
+
+      // Create invoice in Zoho
+      const invoice = await this.createInvoice({
+        customerId: customer.contact_id,
+        serviceItems,
+        currency,
+        notes: `Order ID: ${orderId}\nService delivery within 24-48 hours`
+      });
+
+      // Update order with Zoho IDs
+      await supabase
+        .from('orders')
+        .update({
+          zoho_invoice_id: invoice.invoice_id,
+          zoho_customer_id: customer.contact_id,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', orderId);
+
+      return invoice;
+    } catch (error) {
+      console.error('Error creating invoice from order:', error);
       throw error;
     }
   }
 
-  static async getCustomerInvoices(customerId: string): Promise<ZohoInvoice[]> {
+  // Webhook handler for real-time updates from Zoho
+  static async handleZohoWebhook(webhookData: any): Promise<void> {
     try {
-      const response = await fetch(`/api/zoho/customers/${customerId}/invoices`);
+      const { event_type, data } = webhookData;
+      
+      if (event_type === 'invoice_payment_received') {
+        const invoiceId = data.invoice_id;
+        
+        // Update order status
+        await supabase
+          .from('orders')
+          .update({
+            status: 'paid',
+            updated_at: new Date().toISOString()
+          })
+          .eq('zoho_invoice_id', invoiceId);
 
-      if (!response.ok) {
-        throw new Error('Failed to get customer invoices');
+        // Create invoice record
+        const { data: order } = await supabase
+          .from('orders')
+          .select('*')
+          .eq('zoho_invoice_id', invoiceId)
+          .single();
+
+        if (order) {
+          await supabase
+            .from('invoices')
+            .insert([{
+              order_id: order.id,
+              client_id: order.client_id,
+              invoice_number: data.invoice_number,
+              amount_usd: order.amount_usd,
+              amount_inr: order.amount_inr,
+              currency: order.currency,
+              total_amount: data.total,
+              status: 'paid',
+              due_date: new Date().toISOString()
+            }]);
+        }
       }
-
-      return await response.json();
     } catch (error) {
-      console.error('Error getting customer invoices:', error);
-      throw error;
+      console.error('Error handling Zoho webhook:', error);
     }
   }
 }
