@@ -111,7 +111,7 @@ const DataMigrationPage = () => {
             </h1>
             
             <p className="text-xl text-indigo-100 mb-8 leading-relaxed">
-              Secure migration of data between Microsoft Teams, SharePoint, OneDrive, and Google Drive 
+              Per drive/site/Teams chat migration between Microsoft Teams, SharePoint, OneDrive, and Google Drive 
               with complete integrity preservation and minimal business disruption.
             </p>
             
@@ -142,7 +142,7 @@ const DataMigrationPage = () => {
                 Data Migration <span className="bg-gradient-to-r from-indigo-400 to-pink-400 bg-clip-text text-transparent">Services</span>
               </h2>
               <p className="text-xl text-gray-400 max-w-3xl mx-auto">
-                Comprehensive data migration solutions for all major cloud platforms
+                Per-item data migration solutions for all major cloud platforms
               </p>
             </div>
 
@@ -213,8 +213,8 @@ const DataMigrationPage = () => {
                   Why Choose Our <span className="bg-gradient-to-r from-indigo-400 to-pink-400 bg-clip-text text-transparent">Migration Service</span>
                 </h2>
                 <p className="text-xl text-gray-400 mb-8 leading-relaxed">
-                  Professional data migration ensures zero data loss, maintains file integrity, 
-                  and preserves user permissions and sharing settings.
+                  Professional per-item data migration ensures zero data loss, maintains file integrity, 
+                  and preserves user permissions and sharing settings. Pay only for what you migrate.
                 </p>
                 
                 <div className="space-y-4">

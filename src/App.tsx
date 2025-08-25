@@ -58,7 +58,7 @@ function App() {
           </>
         } />
         <Route path="/services/email-migration" element={<EmailMigrationPage />} />
-        <Route path="/services/email-security" element={<EmailSecurityPage />} />
+        <Route path="/services/email-deliverability" element={<EmailSecurityPage />} />
         <Route path="/services/ssl-setup" element={<SSLSetupPage />} />
         <Route path="/services/cloud-management" element={<CloudManagementPage />} />
         <Route path="/services/data-migration" element={<DataMigrationPage />} />

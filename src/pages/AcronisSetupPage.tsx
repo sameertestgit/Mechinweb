@@ -169,43 +169,16 @@ const AcronisSetupPage = () => {
               
               <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-8 border border-cyan-500/20">
                 <h3 className="text-2xl font-bold text-white mb-6">Service Pricing</h3>
-                <div className="grid md:grid-cols-3 gap-6">
-                  <div className="bg-gray-700/50 rounded-xl p-6 border border-gray-600 hover:border-cyan-500/50 transition-all duration-300">
-                    <h4 className="text-lg font-semibold text-white mb-2">Basic Setup</h4>
-                    <p className="text-gray-400 text-sm mb-4">Single device setup</p>
-                    <div className="text-3xl font-bold text-cyan-400 mb-4">$199</div>
-                    <ul className="space-y-2 text-sm text-gray-300">
-                      <li>✓ Account creation</li>
-                      <li>✓ Basic configuration</li>
-                      <li>✓ Single device setup</li>
-                      <li>✓ Email support</li>
-                    </ul>
-                  </div>
-                  <div className="bg-gray-700/50 rounded-xl p-6 border border-purple-500/50 relative">
-                    <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-cyan-500 to-purple-600 text-white px-4 py-1 rounded-full text-xs font-semibold">
-                      Popular
-                    </div>
-                    <h4 className="text-lg font-semibold text-white mb-2">Advanced Setup</h4>
-                    <p className="text-gray-400 text-sm mb-4">Multiple devices</p>
-                    <div className="text-3xl font-bold text-purple-400 mb-4">$399</div>
-                    <ul className="space-y-2 text-sm text-gray-300">
-                      <li>✓ Everything in Basic</li>
-                      <li>✓ Multiple device setup</li>
-                      <li>✓ Automated schedules</li>
-                      <li>✓ Recovery testing</li>
-                      <li>✓ Priority support</li>
-                    </ul>
-                  </div>
-                  <div className="bg-gray-700/50 rounded-xl p-6 border border-gray-600 hover:border-cyan-500/50 transition-all duration-300">
-                    <h4 className="text-lg font-semibold text-white mb-2">Enterprise Setup</h4>
-                    <p className="text-gray-400 text-sm mb-4">Complete solution</p>
-                    <div className="text-3xl font-bold text-green-400 mb-4">$799</div>
-                    <ul className="space-y-2 text-sm text-gray-300">
-                      <li>✓ Everything in Advanced</li>
-                      <li>✓ Custom backup policies</li>
-                      <li>✓ Disaster recovery planning</li>
-                      <li>✓ Dedicated support</li>
-                      <li>✓ Training sessions</li>
+                <div className="max-w-md mx-auto">
+                  <div className="bg-gray-700/50 rounded-xl p-8 border border-cyan-500/50 text-center">
+                    <h4 className="text-2xl font-semibold text-white mb-2">Complete Setup</h4>
+                    <p className="text-gray-400 text-sm mb-6">One-time Acronis backup solution setup</p>
+                    <div className="text-5xl font-bold text-cyan-400 mb-6">$25</div>
+                    <ul className="space-y-3 text-sm text-gray-300 text-left">
+                      <li>✓ Acronis account creation</li>
+                      <li>✓ Complete configuration</li>
+                      <li>✓ Multi-device setup</li>
+                      <li>✓ Training and support</li>
                     </ul>
                   </div>
                 </div>

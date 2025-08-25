@@ -13,8 +13,8 @@ export interface ServicePricing {
   description: string;
   tiers: {
     basic: PricingTier;
-    standard: PricingTier;
-    enterprise: PricingTier;
+    standard?: PricingTier;
+    enterprise?: PricingTier;
   };
 }
 
@@ -22,79 +22,33 @@ export const servicePricing: Record<string, ServicePricing> = {
   'email-migration': {
     id: 'email-migration',
     name: 'Email Migration & Setup',
-    description: 'Seamless email migration between platforms with zero downtime',
+    description: 'Per mailbox migration with zero downtime',
     tiers: {
       basic: {
-        name: 'Basic',
-        price: 15,
+        name: 'Per Mailbox',
+        price: 4,
         features: [
-          'Up to 10 email accounts',
-          'Basic migration support',
+          'Complete mailbox migration',
           'Email backup included',
-          '48-hour completion'
-        ]
-      },
-      standard: {
-        name: 'Standard',
-        price: 35,
-        features: [
-          'Up to 50 email accounts',
-          'Priority migration support',
-          'Advanced configuration',
-          '24-hour completion',
-          '30-day post-migration support'
-        ],
-        popular: true
-      },
-      enterprise: {
-        name: 'Enterprise',
-        price: 75,
-        features: [
-          'Unlimited email accounts',
-          'Dedicated project manager',
-          'Custom integrations',
-          'Same-day completion',
-          '90-day premium support'
+          'Zero downtime migration',
+          'Basic support'
         ]
       }
     }
   },
-  'email-security': {
-    id: 'email-security',
-    name: 'Domain & Email Security',
+  'email-deliverability': {
+    id: 'email-deliverability',
+    name: 'Email Deliverability',
     description: 'Complete DNS and email authentication setup',
     tiers: {
       basic: {
-        name: 'Basic Setup',
-        price: 15,
+        name: 'Complete Setup',
+        price: 25,
         features: [
           'SPF, DKIM, DMARC setup',
-          'Basic DNS configuration',
-          'Email support',
-          'Setup documentation'
-        ]
-      },
-      standard: {
-        name: 'Advanced',
-        price: 35,
-        features: [
-          'Everything in Basic',
-          'Security monitoring',
-          'Monthly reports',
-          'Priority support',
-          'Custom policies'
-        ],
-        popular: true
-      },
-      enterprise: {
-        name: 'Enterprise',
-        price: 65,
-        features: [
-          'Everything in Advanced',
-          '24/7 monitoring',
-          'Dedicated security expert',
-          'Compliance reporting',
-          'Advanced threat protection'
+          'DNS configuration',
+          'Deliverability optimization',
+          'Email support'
         ]
       }
     }
@@ -181,39 +135,16 @@ export const servicePricing: Record<string, ServicePricing> = {
   'data-migration': {
     id: 'data-migration',
     name: 'Cloud Data Migration',
-    description: 'Secure migration between cloud platforms',
+    description: 'Per drive/site/Teams chat migration',
     tiers: {
       basic: {
-        name: 'Basic',
-        price: 25,
+        name: 'Per Item',
+        price: 5,
         features: [
-          'Up to 100GB data',
-          'Basic migration tools',
-          'Standard support',
-          '7-day completion'
-        ]
-      },
-      standard: {
-        name: 'Standard',
-        price: 55,
-        features: [
-          'Up to 1TB data',
-          'Advanced migration tools',
-          'Priority support',
-          '3-day completion',
-          'Data validation'
-        ],
-        popular: true
-      },
-      enterprise: {
-        name: 'Enterprise',
-        price: 95,
-        features: [
-          'Unlimited data',
-          'Enterprise migration tools',
-          'Dedicated project manager',
-          '24-hour completion',
-          'Full compliance reporting'
+          'Per drive migration',
+          'Per site migration',
+          'Per Teams chat migration',
+          'Data integrity checks'
         ]
       }
     }
@@ -261,39 +192,16 @@ export const servicePricing: Record<string, ServicePricing> = {
   'acronis-setup': {
     id: 'acronis-setup',
     name: 'Acronis Account Setup (Data Backup & Recovery)',
-    description: 'Professional Acronis backup solution setup and configuration',
+    description: 'One-time Acronis backup solution setup and configuration',
     tiers: {
       basic: {
-        name: 'Basic Setup',
-        price: 15,
+        name: 'Complete Setup',
+        price: 25,
         features: [
           'Acronis account creation',
-          'Basic backup configuration',
-          'Single device setup',
-          'Email support'
-        ]
-      },
-      standard: {
-        name: 'Advanced Setup',
-        price: 35,
-        features: [
-          'Everything in Basic',
-          'Multiple device setup',
-          'Automated backup schedules',
-          'Recovery testing',
-          'Priority support'
-        ],
-        popular: true
-      },
-      enterprise: {
-        name: 'Enterprise Setup',
-        price: 65,
-        features: [
-          'Everything in Advanced',
-          'Custom backup policies',
-          'Disaster recovery planning',
-          'Dedicated support',
-          'Training sessions'
+          'Complete configuration',
+          'Multi-device setup',
+          'Training and support'
         ]
       }
     }

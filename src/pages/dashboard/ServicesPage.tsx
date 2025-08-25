@@ -33,25 +33,25 @@ const ServicesPage = () => {
       id: 'email-migration',
       icon: Mail,
       title: 'Email Migration & Setup',
-      description: 'Seamless email migration between platforms with zero downtime and complete data integrity.',
+      description: 'Per mailbox migration with zero downtime and complete data integrity.',
       category: 'email',
       rating: 4.9,
       reviews: 127,
-      startingPrice: 299,
-      features: ['Zero downtime migration', 'Complete data backup', '24/7 support', 'User training'],
+      startingPrice: 4,
+      features: ['Per mailbox migration', 'Complete data backup', 'Zero downtime', 'Basic support'],
       popular: true,
       gradient: 'from-blue-500 to-cyan-500'
     },
     {
-      id: 'email-security',
+      id: 'email-deliverability',
       icon: Shield,
-      title: 'Domain & Email Security',
+      title: 'Email Deliverability',
       description: 'Complete DNS and email authentication setup including SPF, DKIM, and DMARC configuration.',
-      category: 'security',
+      category: 'email',
       rating: 4.8,
       reviews: 89,
-      startingPrice: 199,
-      features: ['SPF/DKIM/DMARC setup', 'DNS troubleshooting', 'Security monitoring', 'Compliance reports'],
+      startingPrice: 25,
+      features: ['SPF/DKIM/DMARC setup', 'DNS troubleshooting', 'Deliverability optimization', 'Email support'],
       popular: false,
       gradient: 'from-green-500 to-emerald-500'
     },
@@ -85,12 +85,12 @@ const ServicesPage = () => {
       id: 'data-migration',
       icon: Database,
       title: 'Cloud Data Migration',
-      description: 'Secure migration of data between Microsoft Teams, SharePoint, OneDrive, and Google Drive.',
+      description: 'Per drive/site/Teams chat migration between cloud platforms.',
       category: 'cloud',
       rating: 4.8,
       reviews: 94,
-      startingPrice: 499,
-      features: ['Teams migration', 'SharePoint transfer', 'Drive synchronization', 'Data integrity checks'],
+      startingPrice: 5,
+      features: ['Per drive migration', 'Per site migration', 'Per Teams chat migration', 'Data integrity checks'],
       popular: false,
       gradient: 'from-indigo-500 to-purple-500'
     },
@@ -106,6 +106,20 @@ const ServicesPage = () => {
       features: ['Plesk optimization', 'cPanel troubleshooting', 'Performance tuning', 'Security hardening'],
       popular: false,
       gradient: 'from-teal-500 to-cyan-500'
+    }
+    ,
+    {
+      id: 'acronis-setup',
+      icon: Database,
+      title: 'Acronis Account Setup (Data Backup & Recovery)',
+      description: 'One-time Acronis backup solution setup and configuration for comprehensive data protection.',
+      category: 'backup',
+      rating: 4.7,
+      reviews: 45,
+      startingPrice: 25,
+      features: ['Account creation & setup', 'Complete configuration', 'Multi-device setup', 'Training and support'],
+      popular: false,
+      gradient: 'from-blue-500 to-indigo-500'
     }
   ];
 

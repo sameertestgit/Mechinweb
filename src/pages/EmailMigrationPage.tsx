@@ -212,42 +212,18 @@ const EmailMigrationPage = () => {
             </div>
 
             <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-8 border border-cyan-500/20">
-              <h3 className="text-2xl font-bold text-white mb-6">Service Pricing</h3>
-              <div className="grid md:grid-cols-3 gap-6">
-                <div className="bg-gray-700/50 rounded-xl p-6 border border-gray-600 hover:border-cyan-500/50 transition-all duration-300">
-                  <h4 className="text-lg font-semibold text-white mb-2">Basic</h4>
-                  <p className="text-gray-400 text-sm mb-4">Up to 10 email accounts</p>
-                  <div className="text-3xl font-bold text-cyan-400 mb-4">$299</div>
-                  <ul className="space-y-2 text-sm text-gray-300">
-                    <li>✓ Email migration</li>
-                    <li>✓ Basic support</li>
-                    <li>✓ Data backup</li>
-                  </ul>
-                </div>
-                <div className="bg-gray-700/50 rounded-xl p-6 border border-purple-500/50 relative">
-                  <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-cyan-500 to-purple-600 text-white px-4 py-1 rounded-full text-xs font-semibold">
-                    Most Popular
+                <div className="max-w-md mx-auto">
+                  <div className="bg-gray-700/50 rounded-xl p-8 border border-cyan-500/50 text-center">
+                    <h4 className="text-2xl font-semibold text-white mb-2">Per Mailbox Migration</h4>
+                    <p className="text-gray-400 text-sm mb-6">Professional email migration service</p>
+                    <div className="text-5xl font-bold text-cyan-400 mb-6">$4<span className="text-lg text-gray-400">/mailbox</span></div>
+                    <ul className="space-y-3 text-sm text-gray-300 text-left">
+                      <li>✓ Complete mailbox migration</li>
+                      <li>✓ Email backup included</li>
+                      <li>✓ Zero downtime migration</li>
+                      <li>✓ Basic support</li>
+                    </ul>
                   </div>
-                  <h4 className="text-lg font-semibold text-white mb-2">Standard</h4>
-                  <p className="text-gray-400 text-sm mb-4">Up to 50 email accounts</p>
-                  <div className="text-3xl font-bold text-purple-400 mb-4">$799</div>
-                  <ul className="space-y-2 text-sm text-gray-300">
-                    <li>✓ Everything in Basic</li>
-                    <li>✓ Priority support</li>
-                    <li>✓ Advanced configuration</li>
-                    <li>✓ 30-day post-migration support</li>
-                  </ul>
-                </div>
-                <div className="bg-gray-700/50 rounded-xl p-6 border border-gray-600 hover:border-cyan-500/50 transition-all duration-300">
-                  <h4 className="text-lg font-semibold text-white mb-2">Enterprise</h4>
-                  <p className="text-gray-400 text-sm mb-4">50+ email accounts</p>
-                  <div className="text-3xl font-bold text-green-400 mb-4">Custom</div>
-                  <ul className="space-y-2 text-sm text-gray-300">
-                    <li>✓ Everything in Standard</li>
-                    <li>✓ Dedicated project manager</li>
-                    <li>✓ Custom integrations</li>
-                    <li>✓ 90-day support</li>
-                  </ul>
                 </div>
               </div>
             </div>

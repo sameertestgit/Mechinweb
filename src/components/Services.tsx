@@ -23,10 +23,10 @@ const Services: React.FC = () => {
     },
     {
       icon: Shield,
-      title: 'Domain & Email Security',
+      title: 'Email Deliverability',
       description: 'Complete DNS and email authentication setup including SPF, DKIM, and DMARC configuration.',
-      features: ['SPF/DKIM/DMARC setup', 'DNS troubleshooting', 'Security monitoring'],
-      link: '/services/email-security',
+      features: ['SPF/DKIM/DMARC setup', 'DNS troubleshooting', 'Deliverability optimization'],
+      link: '/services/email-deliverability',
       gradient: 'from-green-500 to-emerald-500'
     },
     {
@@ -48,8 +48,8 @@ const Services: React.FC = () => {
     {
       icon: Database,
       title: 'Cloud Data Migration',
-      description: 'Secure migration of data between Microsoft Teams, SharePoint, OneDrive, and Google Drive.',
-      features: ['Teams migration', 'SharePoint transfer', 'Drive synchronization'],
+      description: 'Per drive/site/Teams chat migration between cloud platforms.',
+      features: ['Per drive migration', 'Per site migration', 'Per Teams chat migration'],
       link: '/services/data-migration',
       gradient: 'from-indigo-500 to-purple-500'
     },
@@ -67,8 +67,8 @@ const Services: React.FC = () => {
   services.push({
     icon: Database,
     title: 'Acronis Account Setup (Data Backup & Recovery)',
-    description: 'Professional Acronis backup solution setup and configuration for comprehensive data protection.',
-    features: ['Account creation & setup', 'Multi-device configuration', 'Automated backup schedules'],
+    description: 'One-time Acronis backup solution setup and configuration for comprehensive data protection.',
+    features: ['Account creation & setup', 'Complete configuration', 'Multi-device setup'],
     link: '/services/acronis-setup',
     gradient: 'from-blue-500 to-indigo-500'
   });
@@ -78,8 +78,8 @@ const Services: React.FC = () => {
     {
       icon: Database,
       title: 'Acronis Account Setup (Data Backup & Recovery)',
-      description: 'Professional Acronis backup solution setup and configuration for comprehensive data protection.',
-      features: ['Account creation & setup', 'Multi-device configuration', 'Automated backup schedules'],
+      description: 'One-time Acronis backup solution setup and configuration for comprehensive data protection.',
+      features: ['Account creation & setup', 'Complete configuration', 'Multi-device setup'],
       link: '/services/acronis-setup',
       gradient: 'from-blue-500 to-indigo-500'
     }

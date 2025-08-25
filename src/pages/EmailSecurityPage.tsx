@@ -86,12 +86,12 @@ const EmailSecurityPage = () => {
             </div>
             
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6">
-              Domain & Email <span className="bg-gradient-to-r from-purple-300 to-cyan-300 bg-clip-text text-transparent">Security</span>
+              Email <span className="bg-gradient-to-r from-purple-300 to-cyan-300 bg-clip-text text-transparent">Deliverability</span>
             </h1>
             
             <p className="text-xl text-purple-100 mb-8 leading-relaxed">
-              Comprehensive DNS and email authentication setup including SPF, DKIM, and DMARC 
-              to protect your domain and improve email deliverability.
+              Complete DNS and email authentication setup including SPF, DKIM, and DMARC 
+              to improve your email deliverability and inbox placement rates.
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -99,7 +99,7 @@ const EmailSecurityPage = () => {
                 to="/#quote"
                 className="bg-white text-purple-600 font-semibold px-8 py-4 rounded-full hover:bg-purple-50 transition-all duration-300 transform hover:scale-105 shadow-lg"
               >
-                Get Security Audit
+                Get Deliverability Audit
               </Link>
               <Link 
                 to="/#contact"
@@ -118,10 +118,10 @@ const EmailSecurityPage = () => {
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-16">
               <h2 className="text-3xl sm:text-4xl font-bold text-white mb-6">
-                Email Security <span className="bg-gradient-to-r from-purple-400 to-cyan-400 bg-clip-text text-transparent">Solutions</span>
+                Email Deliverability <span className="bg-gradient-to-r from-purple-400 to-cyan-400 bg-clip-text text-transparent">Solutions</span>
               </h2>
               <p className="text-xl text-gray-400 max-w-3xl mx-auto">
-                Advanced email authentication protocols to secure your domain and improve deliverability
+                Advanced email authentication protocols to improve your email deliverability and inbox placement
               </p>
             </div>
 
@@ -150,36 +150,36 @@ const EmailSecurityPage = () => {
             <div className="grid lg:grid-cols-2 gap-12 items-center">
               <div>
                 <h2 className="text-3xl sm:text-4xl font-bold text-white mb-6">
-                  Why Email Security <span className="bg-gradient-to-r from-purple-400 to-cyan-400 bg-clip-text text-transparent">Matters</span>
+                  Why Email Deliverability <span className="bg-gradient-to-r from-purple-400 to-cyan-400 bg-clip-text text-transparent">Matters</span>
                 </h2>
                 <p className="text-xl text-gray-400 mb-8 leading-relaxed">
-                  Without proper email authentication, your domain is vulnerable to spoofing, 
-                  phishing attacks, and poor deliverability rates.
+                  Without proper email authentication, your emails may end up in spam folders 
+                  and your domain reputation may suffer from poor deliverability rates.
                 </p>
                 
                 <div className="space-y-4">
                   {benefits.map((benefit, index) => (
-                    <div key={index} className="flex items-center space-x-3">
-                      <CheckCircle className="h-5 w-5 text-green-500 flex-shrink-0" />
-                      <span className="text-gray-300">{benefit}</span>
-                    </div>
-                  ))}
-                </div>
+                    "Improve email deliverability rates",
+                    "Ensure emails reach the inbox",
+                    "Protect your domain reputation",
+                    "Comply with email authentication standards",
+                    "Reduce emails going to spam",
+                    "Enhanced sender authentication"
               </div>
               
               <div className="bg-gray-800 rounded-2xl p-8 border border-gray-700">
                 <div className="flex items-center space-x-3 mb-6">
                   <AlertTriangle className="h-8 w-8 text-yellow-500" />
-                  <h3 className="text-xl font-bold text-white">Security Warning</h3>
+                  <h3 className="text-xl font-bold text-white">Deliverability Warning</h3>
                 </div>
                 <p className="text-gray-400 mb-6">
-                  Domains without proper email authentication are 5x more likely to be used 
-                  for phishing attacks and have 40% lower email deliverability rates.
+                  Domains without proper email authentication have 40% lower email deliverability rates
+                  and emails are more likely to end up in spam folders.
                 </p>
                 <div className="bg-gradient-to-r from-purple-600 to-cyan-600 rounded-lg p-4">
                   <p className="text-white font-semibold">
                     Don't let your business emails end up in spam folders. 
-                    Secure your domain today!
+                    Improve your deliverability today!
                   </p>
                 </div>
               </div>
@@ -197,7 +197,7 @@ const EmailSecurityPage = () => {
                 Frequently Asked <span className="bg-gradient-to-r from-purple-400 to-cyan-400 bg-clip-text text-transparent">Questions</span>
               </h2>
               <p className="text-xl text-gray-400">
-                Common questions about our email security service
+                Common questions about our email deliverability service
               </p>
             </div>
 
@@ -218,10 +218,10 @@ const EmailSecurityPage = () => {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-4xl mx-auto text-center">
             <h2 className="text-3xl sm:text-4xl font-bold text-white mb-6">
-              Secure Your Email Domain Today
+              Improve Your Email Deliverability Today
             </h2>
             <p className="text-xl text-purple-100 mb-8">
-              Get a comprehensive email security audit and implementation plan
+              Get a comprehensive email deliverability audit and implementation plan
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link 
