@@ -235,43 +235,27 @@ const CloudManagementPage = () => {
               
               <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-8 border border-cyan-500/20">
                 <h3 className="text-2xl font-bold text-white mb-6">Service Pricing</h3>
-                <div className="grid md:grid-cols-3 gap-6">
+                <div className="grid md:grid-cols-2 gap-6">
                   <div className="bg-gray-700/50 rounded-xl p-6 border border-gray-600 hover:border-cyan-500/50 transition-all duration-300">
-                    <h4 className="text-lg font-semibold text-white mb-2">Setup</h4>
+                    <h4 className="text-lg font-semibold text-white mb-2">One-time Setup</h4>
                     <p className="text-gray-400 text-sm mb-4">One-time configuration</p>
-                    <div className="text-3xl font-bold text-cyan-400 mb-4">$399</div>
+                    <div className="text-3xl font-bold text-cyan-400 mb-4">$25</div>
                     <ul className="space-y-2 text-sm text-gray-300">
-                      <li>✓ Initial setup</li>
-                      <li>✓ User configuration</li>
-                      <li>✓ Basic training</li>
-                      <li>✓ Documentation</li>
+                      <li>✓ Initial setup & configuration</li>
+                      <li>✓ User account creation</li>
+                      <li>✓ Basic troubleshooting</li>
+                      <li>✓ Documentation provided</li>
                     </ul>
                   </div>
-                  <div className="bg-gray-700/50 rounded-xl p-6 border border-purple-500/50 relative">
-                    <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-cyan-500 to-purple-600 text-white px-4 py-1 rounded-full text-xs font-semibold">
-                      Best Value
-                    </div>
-                    <h4 className="text-lg font-semibold text-white mb-2">Advanced</h4>
-                    <p className="text-gray-400 text-sm mb-4">Monthly management</p>
-                    <div className="text-3xl font-bold text-purple-400 mb-4">$299<span className="text-lg">/mo</span></div>
+                  <div className="bg-gray-700/50 rounded-xl p-6 border border-purple-500/50">
+                    <h4 className="text-lg font-semibold text-white mb-2">Per Incident Support</h4>
+                    <p className="text-gray-400 text-sm mb-4">Additional troubleshooting</p>
+                    <div className="text-3xl font-bold text-purple-400 mb-4">$5<span className="text-lg text-gray-400">/incident</span></div>
                     <ul className="space-y-2 text-sm text-gray-300">
-                      <li>✓ Everything in Setup</li>
-                      <li>✓ Ongoing management</li>
+                      <li>✓ Additional troubleshooting</li>
+                      <li>✓ Configuration changes</li>
                       <li>✓ User support</li>
-                      <li>✓ Monthly optimization</li>
-                      <li>✓ Security monitoring</li>
-                    </ul>
-                  </div>
-                  <div className="bg-gray-700/50 rounded-xl p-6 border border-gray-600 hover:border-cyan-500/50 transition-all duration-300">
-                    <h4 className="text-lg font-semibold text-white mb-2">Enterprise</h4>
-                    <p className="text-gray-400 text-sm mb-4">Complete management</p>
-                    <div className="text-3xl font-bold text-green-400 mb-4">$599<span className="text-lg">/mo</span></div>
-                    <ul className="space-y-2 text-sm text-gray-300">
-                      <li>✓ Everything in Advanced</li>
-                      <li>✓ Dedicated manager</li>
-                      <li>✓ 24/7 support</li>
-                      <li>✓ Custom integrations</li>
-                      <li>✓ Advanced analytics</li>
+                      <li>✓ Quick resolution</li>
                     </ul>
                   </div>
                 </div>

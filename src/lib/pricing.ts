@@ -59,35 +59,70 @@ export const servicePricing: Record<string, ServicePricing> = {
     description: 'Professional SSL certificate installation and management',
     tiers: {
       basic: {
-        name: 'Single Domain',
-        price: 15,
+        name: 'Free SSL (Let\'s Encrypt)',
+        price: 7,
         features: [
-          'SSL certificate installation',
-          'HTTPS configuration',
-          'Security validation',
+          'Free SSL certificate',
+          'Installation & configuration',
+          'Auto-renewal setup',
           'Basic support'
         ]
       },
       standard: {
-        name: 'Multi-Domain',
-        price: 35,
+        name: 'Paid SSL (Single Domain)',
+        price: 10,
         features: [
-          'Up to 5 domains',
-          'Everything in Single Domain',
-          'Centralized management',
+          'Client-provided SSL certificate',
+          'Professional installation',
+          'Configuration & testing',
           'Priority support'
-        ],
-        popular: true
+        ]
       },
       enterprise: {
-        name: 'Wildcard SSL',
-        price: 65,
+        name: 'Paid SSL (Multi-Domain)',
+        price: 25,
         features: [
+          'Up to 5 domains',
+          'Client-provided SSL certificate',
+          'Complete configuration',
+          'Advanced support'
+        ]
+      }
+    }
+  },
+  'ssl-procurement': {
+    id: 'ssl-procurement',
+    name: 'SSL Certificate Procurement',
+    description: 'SSL certificate purchase and installation service',
+    tiers: {
+      basic: {
+        name: 'Single Domain',
+        price: 15,
+        features: [
+          'Certificate procurement',
+          'Installation & configuration',
+          'From trusted CAs',
+          'Complete setup'
+        ]
+      },
+      standard: {
+        name: 'Multi-Domain',
+        price: 30,
+        features: [
+          'Up to 5 domains',
+          'Certificate procurement',
+          'Professional installation',
+          'Priority support'
+        ]
+      },
+      enterprise: {
+        name: 'Wildcard Certificate',
+        price: 55,
+        features: [
+          'Wildcard certificate',
           'Unlimited subdomains',
-          'Everything in Multi-Domain',
-          'Auto-renewal setup',
-          'Advanced monitoring',
-          '24/7 support'
+          'Premium CA selection',
+          'Advanced support'
         ]
       }
     }
@@ -98,36 +133,23 @@ export const servicePricing: Record<string, ServicePricing> = {
     description: 'Expert administration of Google Workspace and Microsoft 365',
     tiers: {
       basic: {
-        name: 'Setup',
+        name: 'One-time Setup',
         price: 25,
         features: [
-          'Initial setup',
-          'User configuration',
-          'Basic training',
-          'Documentation'
+          'Initial setup & configuration',
+          'User account creation',
+          'Basic troubleshooting',
+          'Documentation provided'
         ]
       },
       standard: {
-        name: 'Advanced',
-        price: 45,
+        name: 'Per Incident Support',
+        price: 5,
         features: [
-          'Monthly management',
-          'Everything in Setup',
-          'Ongoing optimization',
+          'Additional troubleshooting',
+          'Configuration changes',
           'User support',
-          'Security monitoring'
-        ],
-        popular: true
-      },
-      enterprise: {
-        name: 'Enterprise',
-        price: 85,
-        features: [
-          'Everything in Advanced',
-          'Dedicated manager',
-          '24/7 support',
-          'Custom integrations',
-          'Advanced analytics'
+          'Quick resolution'
         ]
       }
     }
@@ -135,16 +157,16 @@ export const servicePricing: Record<string, ServicePricing> = {
   'data-migration': {
     id: 'data-migration',
     name: 'Cloud Data Migration',
-    description: 'Per drive/site/Teams chat migration',
+    description: 'Per user migration between cloud platforms',
     tiers: {
       basic: {
-        name: 'Per Item',
+        name: 'Per User Migration',
         price: 5,
         features: [
-          'Per drive migration',
-          'Per site migration',
-          'Per Teams chat migration',
-          'Data integrity checks'
+          'Microsoft Teams chat migration',
+          'SharePoint site migration',
+          'OneDrive migration',
+          'Google Drive migration'
         ]
       }
     }

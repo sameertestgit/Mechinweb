@@ -63,7 +63,7 @@ const ServicesPage = () => {
       category: 'security',
       rating: 4.9,
       reviews: 156,
-      startingPrice: 149,
+      startingPrice: 7,
       features: ['SSL installation', 'Auto-renewal setup', 'Security optimization', 'Performance monitoring'],
       popular: false,
       gradient: 'from-purple-500 to-pink-500'
@@ -76,7 +76,7 @@ const ServicesPage = () => {
       category: 'cloud',
       rating: 4.7,
       reviews: 203,
-      startingPrice: 399,
+      startingPrice: 25,
       features: ['Google Workspace setup', 'Microsoft 365 admin', 'User management', 'Integration support'],
       popular: true,
       gradient: 'from-orange-500 to-red-500'
@@ -102,7 +102,7 @@ const ServicesPage = () => {
       category: 'hosting',
       rating: 4.6,
       reviews: 78,
-      startingPrice: 149,
+      startingPrice: 15,
       features: ['Plesk optimization', 'cPanel troubleshooting', 'Performance tuning', 'Security hardening'],
       popular: false,
       gradient: 'from-teal-500 to-cyan-500'

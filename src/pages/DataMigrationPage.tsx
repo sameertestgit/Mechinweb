@@ -246,14 +246,14 @@ const DataMigrationPage = () => {
                 <div className="space-y-3">
                   <div className="flex items-center space-x-3">
                     <Clock className="h-5 w-5 text-indigo-500" />
-                    <span className="text-gray-300">End-to-end encryption</span>
-                  </div>
-                  <div className="flex items-center space-x-3">
+                    <h4 className="text-2xl font-semibold text-white mb-2">Per User Migration</h4>
+                    <p className="text-gray-400 text-sm mb-6">Microsoft Teams, SharePoint, OneDrive, Google Drive</p>
+                    <div className="text-5xl font-bold text-cyan-400 mb-6">$5<span className="text-lg text-gray-400">/user</span></div>
                     <Shield className="h-5 w-5 text-indigo-500" />
-                    <span className="text-gray-300">GDPR & HIPAA compliant</span>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <CheckCircle className="h-5 w-5 text-indigo-500" />
+                      <li>✓ Microsoft Teams chat migration</li>
+                      <li>✓ SharePoint site migration</li>
+                      <li>✓ OneDrive migration</li>
+                      <li>✓ Google Drive migration</li>
                     <span className="text-gray-300">Audit trail maintenance</span>
                   </div>
                 </div>

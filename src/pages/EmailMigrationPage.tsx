@@ -225,9 +225,10 @@ const EmailMigrationPage = () => {
                     </ul>
                   </div>
                 </div>
-              </div>
-            </div>
-          </div>
+               </div>
+             </div>
+           </div>
+         </div>
       </section>
 
       {/* FAQs Section */}

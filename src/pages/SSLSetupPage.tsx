@@ -181,16 +181,27 @@ const SSLSetupPage = () => {
               
               <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-8 border border-cyan-500/20">
                 <h3 className="text-2xl font-bold text-white mb-6">Service Pricing</h3>
-                <div className="grid md:grid-cols-3 gap-6">
-                  <div className="bg-gray-700/50 rounded-xl p-6 border border-gray-600 hover:border-cyan-500/50 transition-all duration-300">
-                    <h4 className="text-lg font-semibold text-white mb-2">Single Domain</h4>
-                    <p className="text-gray-400 text-sm mb-4">Perfect for single websites</p>
-                    <div className="text-3xl font-bold text-cyan-400 mb-4">$149</div>
+                <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                  <div className="bg-gray-700/50 rounded-xl p-6 border border-green-500/50">
+                    <h4 className="text-lg font-semibold text-white mb-2">Free SSL</h4>
+                    <p className="text-gray-400 text-sm mb-4">Let's Encrypt certificate</p>
+                    <div className="text-3xl font-bold text-green-400 mb-4">$7</div>
                     <ul className="space-y-2 text-sm text-gray-300">
-                      <li>✓ SSL certificate installation</li>
-                      <li>✓ HTTPS configuration</li>
+                      <li>✓ Free SSL certificate</li>
+                      <li>✓ Installation & setup</li>
+                      <li>✓ Auto-renewal</li>
+                      <li>✓ Processing fee only</li>
+                    </ul>
+                  </div>
+                  <div className="bg-gray-700/50 rounded-xl p-6 border border-cyan-500/50">
+                    <h4 className="text-lg font-semibold text-white mb-2">Single Domain</h4>
+                    <p className="text-gray-400 text-sm mb-4">Client-provided certificate</p>
+                    <div className="text-3xl font-bold text-cyan-400 mb-4">$10</div>
+                    <ul className="space-y-2 text-sm text-gray-300">
+                      <li>✓ Professional installation</li>
+                      <li>✓ Configuration & testing</li>
                       <li>✓ Security validation</li>
-                      <li>✓ Basic support</li>
+                      <li>✓ Priority support</li>
                     </ul>
                   </div>
                   <div className="bg-gray-700/50 rounded-xl p-6 border border-purple-500/50 relative">
@@ -199,25 +210,43 @@ const SSLSetupPage = () => {
                     </div>
                     <h4 className="text-lg font-semibold text-white mb-2">Multi-Domain</h4>
                     <p className="text-gray-400 text-sm mb-4">Up to 5 domains</p>
-                    <div className="text-3xl font-bold text-purple-400 mb-4">$299</div>
+                    <div className="text-3xl font-bold text-purple-400 mb-4">$25</div>
                     <ul className="space-y-2 text-sm text-gray-300">
-                      <li>✓ Everything in Single Domain</li>
-                      <li>✓ Multiple domain support</li>
-                      <li>✓ Centralized management</li>
-                      <li>✓ Priority support</li>
+                      <li>✓ Up to 5 domains</li>
+                      <li>✓ Client-provided certificate</li>
+                      <li>✓ Complete configuration</li>
+                      <li>✓ Advanced support</li>
                     </ul>
                   </div>
-                  <div className="bg-gray-700/50 rounded-xl p-6 border border-gray-600 hover:border-cyan-500/50 transition-all duration-300">
+                  <div className="bg-gray-700/50 rounded-xl p-6 border border-yellow-500/50">
                     <h4 className="text-lg font-semibold text-white mb-2">Wildcard SSL</h4>
                     <p className="text-gray-400 text-sm mb-4">Unlimited subdomains</p>
-                    <div className="text-3xl font-bold text-green-400 mb-4">$499</div>
+                    <div className="text-3xl font-bold text-yellow-400 mb-4">$50</div>
                     <ul className="space-y-2 text-sm text-gray-300">
-                      <li>✓ Everything in Multi-Domain</li>
                       <li>✓ Wildcard certificate</li>
-                      <li>✓ Auto-renewal setup</li>
-                      <li>✓ Advanced monitoring</li>
+                      <li>✓ Unlimited subdomains</li>
+                      <li>✓ Premium installation</li>
                       <li>✓ 24/7 support</li>
                     </ul>
+                  </div>
+                </div>
+                
+                <div className="mt-8 p-6 bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-xl border border-blue-500/20">
+                  <h4 className="text-lg font-semibold text-white mb-3">SSL Certificate Procurement Service</h4>
+                  <p className="text-gray-400 mb-4">Need us to purchase the SSL certificate for you? We can procure certificates from trusted CAs like Sectigo, Comodo, and PositiveSSL.</p>
+                  <div className="grid md:grid-cols-3 gap-4">
+                    <div className="text-center">
+                      <p className="text-white font-semibold">Single Domain</p>
+                      <p className="text-cyan-400 font-bold">+$5 procurement fee</p>
+                    </div>
+                    <div className="text-center">
+                      <p className="text-white font-semibold">Multi-Domain</p>
+                      <p className="text-purple-400 font-bold">+$5 procurement fee</p>
+                    </div>
+                    <div className="text-center">
+                      <p className="text-white font-semibold">Wildcard</p>
+                      <p className="text-yellow-400 font-bold">+$5 procurement fee</p>
+                    </div>
                   </div>
                 </div>
               </div>
