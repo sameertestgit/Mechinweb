@@ -227,9 +227,7 @@ const EmailMigrationPage = () => {
                 </div>
                </div>
              </div>
-           </div>
-         </div>
-      </section>
+        </section>
 
       {/* FAQs Section */}
       <section className="py-20 bg-gray-800">
