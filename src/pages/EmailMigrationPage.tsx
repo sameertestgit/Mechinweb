@@ -226,6 +226,8 @@ const EmailMigrationPage = () => {
                   </div>
                 </div>
                </div>
+            </div>
+          </div>
              </div>
         </section>
 
