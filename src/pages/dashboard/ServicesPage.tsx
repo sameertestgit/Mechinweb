@@ -6,6 +6,7 @@ import {
   Cloud, 
   Database, 
   Server,
+  Wrench,
   ArrowRight,
   Star,
   CheckCircle,
@@ -22,10 +23,11 @@ const ServicesPage = () => {
   }, []);
 
   const categories = [
-    { id: 'all', name: 'All Services', count: 6 },
+    { id: 'all', name: 'All Services', count: 8 },
     { id: 'email', name: 'Email Services', count: 2 },
     { id: 'security', name: 'Security', count: 2 },
-    { id: 'cloud', name: 'Cloud Services', count: 2 }
+    { id: 'cloud', name: 'Cloud Services', count: 2 },
+    { id: 'support', name: 'Support Services', count: 2 }
   ];
 
   const services = [
@@ -107,7 +109,7 @@ const ServicesPage = () => {
       popular: false,
       gradient: 'from-teal-500 to-cyan-500'
     }
-    ,
+    },
     {
       id: 'acronis-setup',
       icon: Database,
@@ -120,6 +122,19 @@ const ServicesPage = () => {
       features: ['Account creation & setup', 'Complete configuration', 'Multi-device setup', 'Training and support'],
       popular: false,
       gradient: 'from-blue-500 to-indigo-500'
+    },
+    {
+      id: 'per-incident-support',
+      icon: Wrench,
+      title: 'Per Incident Support',
+      description: 'Quick resolution for specific IT issues across Google Workspace, Microsoft 365, SSL, and Acronis.',
+      category: 'support',
+      rating: 4.8,
+      reviews: 156,
+      startingPrice: 20,
+      features: ['Expert troubleshooting', 'Quick issue resolution', '7-day follow-up support', 'Documentation provided'],
+      popular: false,
+      gradient: 'from-orange-500 to-red-500'
     }
   ];
 

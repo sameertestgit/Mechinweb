@@ -36,6 +36,23 @@ export const servicePricing: Record<string, ServicePricing> = {
       }
     }
   },
+  'per-incident-support': {
+    id: 'per-incident-support',
+    name: 'Per Incident Support',
+    description: 'Quick resolution for specific IT issues across all platforms',
+    tiers: {
+      basic: {
+        name: 'Per Incident',
+        price: 20,
+        features: [
+          'Expert troubleshooting',
+          'Quick issue resolution',
+          '7-day follow-up support',
+          'Documentation provided'
+        ]
+      }
+    }
+  },
   'email-deliverability': {
     id: 'email-deliverability',
     name: 'Email Deliverability',

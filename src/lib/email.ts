@@ -76,7 +76,8 @@ export class EmailService {
     return await this.sendTemplatedEmail('welcome_email', clientEmail, {
       client_name: clientName,
       client_email: clientEmail,
-      login_url: `${window.location.origin}/client/login`
+      login_url: `${window.location.origin}/client/login`,
+      client_area_url: `${window.location.origin}/client/dashboard`
     });
   }
 

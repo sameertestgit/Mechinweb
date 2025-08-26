@@ -129,8 +129,7 @@ const ClientRegister = () => {
 
       // This is the common case when email confirmation is enabled.
       // It tells the user to check their email.
-      alert('Registration successful! Please check your email to verify your account before logging in.');
-      navigate('/client/login'); // Redirect to login page
+      navigate(`/thank-you?type=registration&email=${encodeURIComponent(formData.email)}&name=${encodeURIComponent(formData.name)}`);
       
     } catch (err) {
       console.error('Registration error:', err);

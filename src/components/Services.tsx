@@ -7,6 +7,7 @@ import {
   Cloud, 
   Database, 
   Server,
+  Wrench,
   ArrowRight,
   CheckCircle
 } from 'lucide-react';
@@ -85,6 +86,7 @@ const Services: React.FC = () => {
     }
   ];
 
+  // Add Per Incident Support service
   return (
     <section id="services" className="py-20 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 relative overflow-hidden scroll-mt-20">
       <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/5 to-purple-500/5"></div>

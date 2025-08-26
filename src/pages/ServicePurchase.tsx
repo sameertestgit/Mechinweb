@@ -138,8 +138,7 @@ const ServicePurchase = () => {
         
         if (paymentMethod !== null) {
           await new Promise(resolve => setTimeout(resolve, 2000));
-          alert(`Payment of ${selectedCurrency === 'USD' ? '$' : '₹'}${totalPrice} processed successfully!`);
-          navigate('/payment-success');
+          navigate(`/thank-you?type=payment&amount=${totalPrice}&currency=${selectedCurrency}`);
         }
       }
     } catch (error) {

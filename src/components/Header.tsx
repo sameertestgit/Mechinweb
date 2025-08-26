@@ -71,7 +71,8 @@ export default function Header() {
     { name: 'Cloud Suite Management', link: '/services/cloud-management' },
     { name: 'Cloud Data Migration', link: '/services/data-migration' },
     { name: 'Hosting & Control Panel Support', link: '/services/hosting-support' },
-    { name: 'Acronis Account Setup', link: '/services/acronis-setup' }
+    { name: 'Acronis Account Setup', link: '/services/acronis-setup' },
+    { name: 'Per Incident Support', link: '/services/per-incident-support' }
   ];
 
   return (

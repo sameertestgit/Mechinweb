@@ -5,6 +5,15 @@ import { CheckCircle, Download, MessageCircle, Calendar, Mail } from 'lucide-rea
 const PaymentSuccess = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
+    
+    // Redirect to thank you page with payment type
+    const searchParams = new URLSearchParams(window.location.search);
+    const orderId = searchParams.get('order_id');
+    const amount = searchParams.get('amount');
+    
+    if (orderId) {
+      window.location.href = `/thank-you?type=payment&order_id=${orderId}&amount=${amount}`;
+    }
   }, []);
 
   return (

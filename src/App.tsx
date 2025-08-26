@@ -22,6 +22,8 @@ import PaymentSuccess from './pages/PaymentSuccess';
 import InvoiceView from './pages/InvoiceView';
 import Testimonials from './components/Testimonials';
 import DashboardLayout from './components/dashboard/DashboardLayout';
+import PerIncidentSupportPage from './pages/PerIncidentSupportPage';
+import ThankYouPage from './pages/ThankYouPage';
 import DashboardOverview from './pages/dashboard/DashboardOverview';
 import ServicesPage from './pages/dashboard/ServicesPage';
 import PaymentsPage from './pages/dashboard/PaymentsPage';
@@ -64,6 +66,8 @@ function App() {
         <Route path="/services/data-migration" element={<DataMigrationPage />} />
         <Route path="/services/hosting-support" element={<HostingSupportPage />} />
         <Route path="/services/acronis-setup" element={<AcronisSetupPage />} />
+        <Route path="/services/per-incident-support" element={<PerIncidentSupportPage />} />
+        <Route path="/thank-you" element={<ThankYouPage />} />
         <Route path="/blog/:slug" element={<BlogPostPage />} />
         <Route path="/client/login" element={<ClientLogin />} />
         <Route path="/client/register" element={<ClientRegister />} />
