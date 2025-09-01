@@ -170,15 +170,15 @@ const ThankYouPage = () => {
                     <div className="w-8 h-8 bg-cyan-500 rounded-full flex items-center justify-center mx-auto mb-2">
                       <span className="text-white font-bold">1</span>
                     </div>
-                    <p className="text-white font-medium">Verify Email</p>
-                    <p className="text-gray-400">Click the link in your email</p>
+                    <p className="text-white font-medium">Login</p>
+                    <p className="text-gray-400">Access your account</p>
                   </div>
                   <div className="text-center">
                     <div className="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center mx-auto mb-2">
                       <span className="text-white font-bold">2</span>
                     </div>
-                    <p className="text-white font-medium">Login</p>
-                    <p className="text-gray-400">Access your client dashboard</p>
+                    <p className="text-white font-medium">Dashboard</p>
+                    <p className="text-gray-400">Explore your client area</p>
                   </div>
                   <div className="text-center">
                     <div className="w-8 h-8 bg-pink-500 rounded-full flex items-center justify-center mx-auto mb-2">

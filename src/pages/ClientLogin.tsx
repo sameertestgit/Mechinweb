@@ -75,12 +75,6 @@ const ClientLogin = () => {
       }
 
       if (data.user) {
-        // Check if user has verified their email
-        if (!data.user.email_confirmed_at) {
-          setErrors({ general: 'Please verify your email address before logging in. Check your inbox for the verification link.' });
-          return;
-        }
-
         // Create client profile if it doesn't exist (for newly verified users)
         const { data: existingProfile } = await supabase
           .from('clients')
@@ -97,8 +91,8 @@ const ClientLogin = () => {
                 id: data.user.id,
                 name: data.user.user_metadata?.name || formData.email.split('@')[0],
                 email: formData.email,
-                email_verified: true,
-                email_verified_at: new Date().toISOString()
+                email_verified: data.user.email_confirmed_at ? true : false,
+                email_verified_at: data.user.email_confirmed_at || null
               }
             ]);
 

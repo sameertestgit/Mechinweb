@@ -24,12 +24,13 @@ const ProfilePage = () => {
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const [profileData, setProfileData] = useState({
-    name: 'John Doe',
-    email: 'john@example.com',
-    phone: '+1 (555) 123-4567',
-    company: 'Tech Solutions Inc.',
+    name: '',
+    email: '',
+    phone: '',
+    company: '',
     timezone: 'America/New_York',
     language: 'English'
   });
@@ -54,24 +55,50 @@ const ProfilePage = () => {
   }, []);
 
   const loadUserProfile = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (user) {
-      const { data: profile } = await supabase
+    setLoading(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        console.error('No authenticated user found');
+        return;
+      }
+
+      // Get client profile data
+      const { data: profile, error } = await supabase
         .from('clients')
         .select('*')
         .eq('id', user.id)
-        .single();
+        .maybeSingle();
       
+      if (error) {
+        console.error('Error loading profile:', error);
+        return;
+      }
+
       if (profile) {
         setProfileData({
-          name: profile.name || '',
-          email: profile.email || '',
+          name: profile.name || user.user_metadata?.name || '',
+          email: profile.email || user.email || '',
           phone: profile.phone || '',
           company: profile.company || '',
           timezone: 'America/New_York',
           language: 'English'
         });
+      } else {
+        // If no profile exists, use auth data
+        setProfileData({
+          name: user.user_metadata?.name || user.email?.split('@')[0] || '',
+          email: user.email || '',
+          phone: '',
+          company: '',
+          timezone: 'America/New_York',
+          language: 'English'
+        });
       }
+    } catch (error) {
+      console.error('Error in loadUserProfile:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -209,105 +236,115 @@ const ProfilePage = () => {
                   </div>
                 </div>
 
-                <form onSubmit={handleProfileUpdate} className="space-y-6">
-                  <div className="grid md:grid-cols-2 gap-6">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-300 mb-2">Full Name</label>
-                      <div className="relative">
-                        <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-                        <input
-                          type="text"
-                          value={profileData.name}
-                          onChange={(e) => setProfileData({...profileData, name: e.target.value})}
-                          className="w-full pl-10 pr-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-500"
-                        />
+                {loading ? (
+                  <div className="flex items-center justify-center py-8">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-cyan-500"></div>
+                    <span className="text-white ml-3">Loading profile...</span>
+                  </div>
+                ) : (
+                  <form onSubmit={handleProfileUpdate} className="space-y-6">
+                    <div className="grid md:grid-cols-2 gap-6">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-300 mb-2">Full Name</label>
+                        <div className="relative">
+                          <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                          <input
+                            type="text"
+                            value={profileData.name}
+                            onChange={(e) => setProfileData({...profileData, name: e.target.value})}
+                            className="w-full pl-10 pr-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                            placeholder="Enter your full name"
+                          />
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm font-medium text-gray-300 mb-2">Email Address</label>
+                        <div className="relative">
+                          <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                          <input
+                            type="email"
+                            value={profileData.email}
+                            disabled
+                            className="w-full pl-10 pr-4 py-3 bg-gray-600 border border-gray-500 rounded-lg text-gray-400 cursor-not-allowed"
+                          />
+                        </div>
+                        <p className="text-gray-400 text-xs mt-1">Email cannot be changed</p>
                       </div>
                     </div>
                     
-                    <div>
-                      <label className="block text-sm font-medium text-gray-300 mb-2">Email Address</label>
-                      <div className="relative">
-                        <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-                        <input
-                          type="email"
-                          value={profileData.email}
-                          disabled
-                          className="w-full pl-10 pr-4 py-3 bg-gray-600 border border-gray-500 rounded-lg text-gray-400 cursor-not-allowed"
-                        />
+                    <div className="grid md:grid-cols-2 gap-6">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-300 mb-2">Phone Number</label>
+                        <div className="relative">
+                          <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                          <input
+                            type="tel"
+                            value={profileData.phone}
+                            onChange={(e) => setProfileData({...profileData, phone: e.target.value})}
+                            className="w-full pl-10 pr-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                            placeholder="Enter your phone number"
+                          />
+                        </div>
                       </div>
-                      <p className="text-gray-400 text-xs mt-1">Email cannot be changed</p>
-                    </div>
-                  </div>
-                  
-                  <div className="grid md:grid-cols-2 gap-6">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-300 mb-2">Phone Number</label>
-                      <div className="relative">
-                        <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-                        <input
-                          type="tel"
-                          value={profileData.phone}
-                          onChange={(e) => setProfileData({...profileData, phone: e.target.value})}
-                          className="w-full pl-10 pr-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-500"
-                        />
-                      </div>
-                    </div>
-                    
-                    <div>
-                      <label className="block text-sm font-medium text-gray-300 mb-2">Company</label>
-                      <div className="relative">
-                        <Building className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-                        <input
-                          type="text"
-                          value={profileData.company}
-                          onChange={(e) => setProfileData({...profileData, company: e.target.value})}
-                          className="w-full pl-10 pr-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-500"
-                        />
+                      
+                      <div>
+                        <label className="block text-sm font-medium text-gray-300 mb-2">Company</label>
+                        <div className="relative">
+                          <Building className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                          <input
+                            type="text"
+                            value={profileData.company}
+                            onChange={(e) => setProfileData({...profileData, company: e.target.value})}
+                            className="w-full pl-10 pr-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                            placeholder="Enter your company name"
+                          />
+                        </div>
                       </div>
                     </div>
-                  </div>
 
-                  <div className="grid md:grid-cols-2 gap-6">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-300 mb-2">Timezone</label>
-                      <div className="relative">
-                        <Globe className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                    <div className="grid md:grid-cols-2 gap-6">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-300 mb-2">Timezone</label>
+                        <div className="relative">
+                          <Globe className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                          <select
+                            value={profileData.timezone}
+                            onChange={(e) => setProfileData({...profileData, timezone: e.target.value})}
+                            className="w-full pl-10 pr-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                          >
+                            <option value="America/New_York">Eastern Time (ET)</option>
+                            <option value="America/Chicago">Central Time (CT)</option>
+                            <option value="America/Denver">Mountain Time (MT)</option>
+                            <option value="America/Los_Angeles">Pacific Time (PT)</option>
+                          </select>
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm font-medium text-gray-300 mb-2">Language</label>
                         <select
-                          value={profileData.timezone}
-                          onChange={(e) => setProfileData({...profileData, timezone: e.target.value})}
-                          className="w-full pl-10 pr-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                          value={profileData.language}
+                          onChange={(e) => setProfileData({...profileData, language: e.target.value})}
+                          className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
                         >
-                          <option value="America/New_York">Eastern Time (ET)</option>
-                          <option value="America/Chicago">Central Time (CT)</option>
-                          <option value="America/Denver">Mountain Time (MT)</option>
-                          <option value="America/Los_Angeles">Pacific Time (PT)</option>
+                          <option value="English">English</option>
+                          <option value="Spanish">Spanish</option>
+                          <option value="French">French</option>
                         </select>
                       </div>
                     </div>
-                    
-                    <div>
-                      <label className="block text-sm font-medium text-gray-300 mb-2">Language</label>
-                      <select
-                        value={profileData.language}
-                        onChange={(e) => setProfileData({...profileData, language: e.target.value})}
-                        className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-cyan-500"
-                      >
-                        <option value="English">English</option>
-                        <option value="Spanish">Spanish</option>
-                        <option value="French">French</option>
-                      </select>
-                    </div>
-                  </div>
 
-                  <button
-                    type="submit"
-                    disabled={isLoading}
-                    className="bg-gradient-to-r from-cyan-500 to-purple-600 text-white px-6 py-3 rounded-lg font-semibold hover:from-cyan-600 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none inline-flex items-center space-x-2"
-                  >
-                    <Save className="w-4 h-4" />
-                    <span>{isLoading ? 'Saving...' : 'Save Changes'}</span>
-                  </button>
-                </form>
+                    <button
+                      type="submit"
+                      disabled={isLoading}
+                      className="bg-gradient-to-r from-cyan-500 to-purple-600 text-white px-6 py-3 rounded-lg font-semibold hover:from-cyan-600 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none inline-flex items-center space-x-2"
+                    >
+                      <Save className="w-4 h-4" />
+                      <span>{isLoading ? 'Saving...' : 'Save Changes'}</span>
+                    </button>
+                  </form>
+                )}
               </div>
             )}
 

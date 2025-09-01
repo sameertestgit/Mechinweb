@@ -25,6 +25,7 @@ const DashboardLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [notifications, setNotifications] = useState(3);
   const [realtimeConnected, setRealtimeConnected] = useState(false);
+  const [userProfile, setUserProfile] = useState(null);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -34,6 +35,38 @@ const DashboardLayout = () => {
         return;
       }
       setUser(user);
+      
+      // Load user profile for display
+      try {
+        const { data: profile } = await supabase
+          .from('clients')
+          .select('*')
+          .eq('id', user.id)
+          .maybeSingle();
+        
+        if (profile) {
+          setUserProfile(profile);
+        } else {
+          // Create profile if it doesn't exist
+          const { data: newProfile, error: createError } = await supabase
+            .from('clients')
+            .insert([{
+              id: user.id,
+              name: user.user_metadata?.name || user.email?.split('@')[0] || 'User',
+              email: user.email || '',
+              email_verified: user.email_confirmed_at ? true : false,
+              email_verified_at: user.email_confirmed_at || null
+            }])
+            .select()
+            .single();
+          
+          if (!createError && newProfile) {
+            setUserProfile(newProfile);
+          }
+        }
+      } catch (error) {
+        console.error('Error loading user profile:', error);
+      }
       
       // Set up real-time connection status monitoring
       const channel = supabase.channel('connection-status');
@@ -135,7 +168,7 @@ const DashboardLayout = () => {
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-white font-medium truncate">
-                  {user?.user_metadata?.name || user?.email || 'User'}
+                  {userProfile?.name || user?.user_metadata?.name || user?.email?.split('@')[0] || 'User'}
                 </p>
                 <p className="text-gray-400 text-sm truncate">Premium Client</p>
               </div>

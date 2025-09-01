@@ -94,14 +94,14 @@ const ClientRegister = () => {
       // Destructure the user object from the returned data
       const { user } = authData;
 
-      if (!user || !user.email_confirmed_at) {
+      if (!user) {
         setErrors({ general: 'Could not create user. Please try again.' });
         setIsLoading(false);
         return;
       }
 
-      // User registered successfully but needs email verification
-      // Create client profile only after email verification
+      // User registered successfully - redirect to thank you page
+      // Note: Email verification is handled by Supabase automatically
       navigate(`/thank-you?type=registration&email=${encodeURIComponent(formData.email)}&name=${encodeURIComponent(formData.name)}`);
       
     } catch (err) {
