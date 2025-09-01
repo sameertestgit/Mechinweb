@@ -256,7 +256,9 @@ const DashboardOverview = () => {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-3xl font-bold text-white mb-2">Welcome back! 👋</h1>
-              <p className="text-gray-400 text-lg">Here's what's happening with your services</p>
+              <p className="text-gray-400 text-lg">
+                Welcome back, <span className="text-cyan-400 font-semibold">{userProfile?.name || 'User'}</span>! Here's what's happening with your services
+              </p>
             </div>
             <div className="hidden md:block">
               <Link

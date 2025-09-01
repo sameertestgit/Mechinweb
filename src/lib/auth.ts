@@ -29,6 +29,34 @@ export const getCurrentUser = async (): Promise<UserProfile | null> => {
         created_at: profile.created_at,
         updated_at: profile.updated_at
       };
+    } else {
+      // If no profile exists, create one from auth data
+      try {
+        const { data: newProfile, error: createError } = await supabase
+          .from('clients')
+          .insert([{
+            id: user.id,
+            name: user.user_metadata?.name || user.email?.split('@')[0] || 'User',
+            email: user.email || '',
+            email_verified: user.email_confirmed_at ? true : false,
+            email_verified_at: user.email_confirmed_at || null
+          }])
+          .select()
+          .single();
+        
+        if (!createError && newProfile) {
+          return {
+            id: newProfile.id,
+            name: newProfile.name,
+            email: newProfile.email,
+            role: 'client',
+            created_at: newProfile.created_at,
+            updated_at: newProfile.updated_at
+          };
+        }
+      } catch (createError) {
+        console.error('Error creating profile:', createError);
+      }
     }
 
     return null;
